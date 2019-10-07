@@ -1,0 +1,34 @@
+{
+  "name": "nautil-cli",
+  "version": "0.0.5",
+  "description": "CLI from nautil.",
+  "main": "index.js",
+  "bin": {
+    "nautil-cli": "index.js"
+  },
+  "scripts": {},
+  "author": "tangshuang",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-react-require": "^3.1.1",
+    "commander": "^3.0.1",
+    "css-loader": "^3.0.0",
+    "css-object-loader": "0.0.7",
+    "dotenv": "^8.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "i18next-browser-languagedetector": "^3.0.3",
+    "mini-css-extract-plugin": "^0.8.0",
+    "mp-webpack-plugin": "0.0.12",
+    "shelljs": "^0.8.3",
+    "style-loader": "^0.23.1",
+    "tyshemo": "^2.10.0",
+    "webpack": "^4.35.2",
+    "webpack-dev-server": "^3.8.1",
+    "webpack-merge": "^4.2.2"
+  }
+}
