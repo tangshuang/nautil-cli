@@ -9,7 +9,6 @@ const { copy, exists } = require('./utils/file')
 const pkg = require('./package.json')
 const { version, name } = pkg
 const cwd = process.cwd()
-const env = process.env.NODE_ENV
 
 commander
   .name(name)
@@ -32,21 +31,30 @@ commander
 
 commander
   .command('build <target>')
-  .action(function(target) {
+  .option('-e, --env', 'production|development')
+  .action(function(target, options) {
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
+    const { env = 'production' } = options
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
       return
     }
 
+    const config = require(configFile)
+    const outpath = config.output.path
+    const outdir = path.resolve(outpath, '..')
+
+    shell.exec(`rm -rf ${JSON.stringify(outdir)}`)
     shell.cd(cwd)
     shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
 
+    if (!exists(outdir)) {
+      shell.exit(0)
+      return
+    }
+
     if (target === 'miniapp') {
-      const config = require(configFile)
-      const outpath = config.output.path
-      const outdir = path.resolve(outpath, '..')
       shell.cd(outdir)
       shell.exec('npm i')
       shell.exec('rm -rf miniprogram_npm && mkdir miniprogram_npm')
