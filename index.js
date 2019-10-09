@@ -3,15 +3,13 @@
 const commander = require('commander')
 const shell = require('shelljs')
 const path = require('path')
-const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
 
-const generators = require('./webpack')
 const { copy, exists } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
 const cwd = process.cwd()
+const env = process.env.NODE_ENV
 
 commander
   .name(name)
@@ -32,13 +30,30 @@ commander
     shell.exit(0)
   })
 
-// commander
-//   .command('build <target>')
-//   .action(function(target) {
-//     const compiler = createCompiler(target)
-//     const catcher = createCatcher()
-//     compiler.run(catcher)
-//   })
+commander
+  .command('build <target>')
+  .action(function(target) {
+    const configFile = path.resolve(cwd, '.nautil', target + '.js')
+
+    if (!exists(configFile)) {
+      console.error(`${configFile} is not existing.`)
+      return
+    }
+
+    shell.cd(cwd)
+    shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
+
+    if (target === 'miniapp') {
+      const config = require(configFile)
+      const outpath = config.output.path
+      const outdir = path.resolve(outpath, '..')
+      shell.cd(outdir)
+      shell.exec('npm i')
+      shell.exec('rm -rf miniprogram_npm && mkdir miniprogram_npm')
+      shell.exec('cp -r node_modules/miniprogram-element/src miniprogram_npm/miniprogram-element')
+      shell.exec('cp -r node_modules/miniprogram-render/src miniprogram_npm/miniprogram-render')
+    }
+  })
 
 // commander
 //   .command('watch <target>')

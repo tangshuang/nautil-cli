@@ -8,7 +8,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const dotenv = require('dotenv')
 
 const env = process.env.NODE_ENV
-const rootDir = path.resolve(__dirname, '..')
+const rootDir = process.cwd()
 
 // 加载环境变量
 dotenv.config()
