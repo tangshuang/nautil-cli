@@ -53,6 +53,12 @@ commander
 commander
   .command('init-native')
   .action(function() {
+    if (exists(path.resolve(cwd, '.nautil/native'))) {
+      console.error('native has been generated. remove `.nautil/native` and clear `src/native` first.')
+      shell.exit(1)
+      return
+    }
+
     const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
     const { name } = json
