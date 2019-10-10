@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { copy, exists, readJSON, writeJSON, read, write, remove, mkdir } = require('./utils/file')
+const { copy, exists, readJSON, writeJSON, read, write, remove, mkdir, scandir } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -20,6 +20,13 @@ commander
   .description('Create an empty nautil application.')
   .option('-n, --native', 'whether to generate react-native files')
   .action(function(name, options) {
+    const currentfiles = scandir(cwd)
+    if (currentfiles && currentfiles.length) {
+      console.error('Current dir is not empty.')
+      shell.exit(1)
+      return
+    }
+
     if (!name) {
       console.error('Please give a project name.')
       shell.exit(1)
@@ -39,6 +46,7 @@ commander
     shell.cd(cwd)
     shell.exec('npm i')
     shell.exec('git init')
+    shell.cp('.env_sample', '.env')
 
     shell.exec('npm i -D nautil-cli')
 
@@ -73,8 +81,8 @@ commander
     const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
     write(indexfile, indexnewcontent)
 
-    remove(path.resolve(cwd, 'src/native/App.js'))
-    remove(path.resolve(cwd, 'src/native/index.js'))
+    remove(path.resolve(cwd, 'src/react-native/App.js'))
+    remove(path.resolve(cwd, 'src/react-native/index.js'))
 
     shell.exit(0)
   })
