@@ -53,13 +53,13 @@ commander
 commander
   .command('init-native')
   .action(function() {
-    const pkgfile = path.resolve(target, 'package.json')
+    const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
     const { name } = json
     const dirname = camelCase(name, { pascalCase: true })
     shell.cd(path.resolve(cwd, 'src'))
     shell.exec(`react-native init ${dirname}`)
-    shell.exec(`cp -f native/. ${dirname}/`)
+    copy(path.resolve(cwd, 'src/native') + '/.', path.resolve(cwd, 'src', dirname), true)
     shell.exec(`rm -rf native`)
     shell.exec(`mv ${dirname} native`)
     shell.cd(cwd)
