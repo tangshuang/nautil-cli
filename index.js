@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { copy, exists, readJSON, writeJSON } = require('./utils/file')
+const { copy, exists, readJSON, writeJSON, read, write, remove } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -56,14 +56,22 @@ commander
     const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
     const { name } = json
-    const dirname = camelCase(name, { pascalCase: true })
+    const appname = camelCase(name, { pascalCase: true })
     shell.cd(path.resolve(cwd, 'src'))
-    shell.exec(`react-native init ${dirname}`)
-    copy(path.resolve(cwd, 'src/native') + '/.', path.resolve(cwd, 'src', dirname), true)
+    shell.exec(`react-native init ${appname}`)
+    copy(path.resolve(cwd, 'src/native') + '/.', path.resolve(cwd, 'src', appname), true)
     shell.exec(`rm -rf native`)
-    shell.exec(`mv ${dirname} native`)
+    shell.exec(`mv ${appname} native`)
     shell.cd(cwd)
     shell.exec(`touch .nautil/native`)
+
+    const indexfile = path.resolve(cwd, 'src/native/index.js')
+    const indexcontent = read(indexfile)
+    const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
+    write(indexfile, indexnewcontent)
+
+    remove(path.resolve(cwd, 'src/native/App.js'))
+
     shell.exit(0)
   })
 
