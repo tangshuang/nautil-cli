@@ -1,7 +1,13 @@
 // https://github.com/wechat-miniprogram/kbone/blob/develop/docs/quickstart.md
-module.exports = {
+const { exists } = require('../utils/file')
+const cwd = process.cwd()
+const path = require('path')
+const customMpConfigFile = path.resolve(cwd, '.nautil/mp.config.js')
+const customMpConfig = exists(customMpConfigFile) ? require(customMpConfigFile) : {}
+
+const basicMpConfig = {
   // 页面 origin，默认是 https://miniprogram.default
-  origin: 'https://test.miniprogram.com',
+  origin: 'https://domain.com',
   // 入口页面路由，默认是 /
   entry: '/',
   // 页面路由，用于页面间跳转
@@ -9,10 +15,6 @@ module.exports = {
     // 路由可以是多个值，支持动态路由
     home: [
       '/(home|index)?',
-      '/test/(home|index)',
-    ],
-    list: [
-      '/test/list/:id',
     ],
   },
   // 特殊路由跳转
@@ -28,7 +30,7 @@ module.exports = {
     backgroundTextStyle: 'dark',
     navigationBarBackgroundColor: 'transparent',
     navigationBarTextStyle: 'black',
-    navigationBarTitleText: 'miniprogram-project',
+    navigationBarTitleText: 'Nautil Demo',
   },
   // 全局配置
   global: {
@@ -44,10 +46,6 @@ module.exports = {
   pages: {
     home: {
       pullDownRefresh: true,
-    },
-    list: {
-      loadingText: '',
-      share: false,
     },
   },
   // 优化
@@ -80,3 +78,35 @@ module.exports = {
     'cancelAnimationFrame',
   ],
 }
+
+const config = {
+  ...basicMpConfig,
+}
+
+// 自定义配置只能覆盖到第二层
+const keys = Object.keys(customMpConfig)
+keys.forEach((key) => {
+  const basic = basicMpConfig[key]
+  const custom = customMpConfig[key]
+
+  if (['router'].indexOf(key) > -1) {
+    config[key] = custom
+  }
+  else if (Array.isArray(custom)) {
+    const origin = Array.isArray(basic) ? basic : []
+    config[key] = origin.concat(custom)
+  }
+  else if (typeof custom === 'object') {
+    const origin = Array.isArray(basic)
+      ? {}
+      : typeof basic === 'object'
+        ? basic
+        : {}
+    config[key] = { ...origin, custom }
+  }
+  else {
+    config[key] = custom
+  }
+})
+
+module.exports = config

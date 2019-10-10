@@ -63,63 +63,26 @@ commander
     }
   })
 
-// commander
-//   .command('watch <target>')
-//   .action(function(target) {
-//     const compiler = createCompiler(target)
-//     const catcher = createCatcher()
-//     compiler.watch(catcher)
-//   })
+commander
+  .command('dev <target>')
+  .option('-e, --env', 'production|development')
+  .action(function(target, options) {
+    const configFile = path.resolve(cwd, '.nautil', target + '.js')
+    const { env = 'production' } = options
 
-// commander
-//   .command('serve <target>')
-//   .action(function(target) {
-//     const compiler = createCompiler(target)
-//     const { options } = compiler
-//     const { devServer = {} } = options
-//     const server = new WebpackDevServer(compiler, devServer)
-//     const { port = 3000 } = devServer
-//     server.listen(port)
-//   })
+    if (!exists(configFile)) {
+      console.error(`${configFile} is not existing.`)
+      return
+    }
+
+    shell.cd(cwd)
+
+    // build to generate dirs/files
+    if (target === 'miniapp') {
+      shell.exec(`nautil-cli build miniapp`)
+    }
+
+    shell.exec(`cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`)
+  })
 
 commander.parse(process.argv)
-
-
-// function createCompiler(target) {
-//   const configfile = path.resolve(cwd, `.nautil/${target}.js`)
-//   const generate = generators[target]
-//   const config = generate(exists(configfile) ? require(configfile) : {})
-//   const compiler = webpack(config)
-//   return compiler
-// }
-
-// function createCatcher() {
-//   return (err, stats) => {
-//     let flag = false
-//     if (err) {
-//       if (err.stack) {
-//         console.error(err.stack)
-//       }
-//       if (err.details) {
-//         console.error(err.details)
-//       }
-//       flag = true
-//     }
-
-//     const info = stats.toJson()
-
-//     if (stats.hasErrors()) {
-//       Array.from(info.errors).forEach(str => console.error(str))
-//       flag = true
-//     }
-
-//     if (stats.hasWarnings()) {
-//       Array.from(info.warnings).forEach(str => console.error(str))
-//       flag = true
-//     }
-
-//     if (flag) {
-//       shell.exit(1)
-//     }
-//   }
-// }

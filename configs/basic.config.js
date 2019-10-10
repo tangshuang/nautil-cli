@@ -10,6 +10,10 @@ const dotenv = require('dotenv')
 const env = process.env.NODE_ENV
 const rootDir = process.cwd()
 
+const { exists } = require('../utils/file')
+const customDevServerConfigFile = path.resolve(rootDir, '.nautil/dev-server.config.js')
+const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
+
 // 加载环境变量
 dotenv.config()
 
@@ -41,6 +45,7 @@ module.exports = {
     compress: true,
     port: 9000,
     historyApiFallback: true,
+    ...customDevServerConfig,
   },
   plugins: [
     new DefinePlugin({
