@@ -1,8 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "start": "nautil-cli run start",
-    "dev": "nautil-cli run dev"
+    "build-web": "nautil-cli build web",
+    "build-wc": "nautil-cli build web-component",
+    "build-miniapp": "nautil-cli build miniapp",
+    "build-native": "nautil-cli build native",
+    "dev-web": "nautil-cli dev web",
+    "dev-wc": "nautil-cli dev web-component",
+    "dev-miniapp": "nautil-cli dev miniapp",
+    "dev-native": "nautil-cli dev native"
   },
   "dependencies": {
     "nautil": "^0.0.10"

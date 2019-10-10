@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { copy, exists, readJSON, writeJSON, read, write, remove } = require('./utils/file')
+const { copy, exists, readJSON, writeJSON, read, write, remove, mkdir } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -53,7 +53,7 @@ commander
 commander
   .command('init-native')
   .action(function() {
-    if (exists(path.resolve(cwd, '.nautil/native'))) {
+    if (exists(path.resolve(cwd, 'src/react-native'))) {
       console.error('native has been generated. remove `.nautil/native` and clear `src/native` first.')
       shell.exit(1)
       return
@@ -65,11 +65,8 @@ commander
     const appname = camelCase(name, { pascalCase: true })
     shell.cd(path.resolve(cwd, 'src'))
     shell.exec(`react-native init ${appname}`)
-    copy(path.resolve(cwd, 'src/native') + '/.', path.resolve(cwd, 'src', appname), true)
-    shell.exec(`rm -rf native`)
-    shell.exec(`mv ${appname} native`)
+    shell.exec(`mv ${appname} react-native`)
     shell.cd(cwd)
-    shell.exec(`touch .nautil/native`)
 
     const indexfile = path.resolve(cwd, 'src/native/index.js')
     const indexcontent = read(indexfile)
@@ -77,6 +74,7 @@ commander
     write(indexfile, indexnewcontent)
 
     remove(path.resolve(cwd, 'src/native/App.js'))
+    remove(path.resolve(cwd, 'src/native/index.js'))
 
     shell.exit(0)
   })
@@ -86,26 +84,13 @@ commander
   .option('-e, --env', 'production|development')
   .option('-p, --platform', 'ios|andriod')
   .action(function(target, options) {
-    const { env = 'production', platform = 'ios' } = options
-
-    if (target === 'native') {
-      if (!exists(path.resolve(cwd, '.nautil/native'))) {
-        console.error('native not generated. run `npx nautil-cli init-native` first.')
-        shell.exit(1)
-        return
-      }
-
-      shell.cd(path.resolve(cwd, 'src/native'))
-      const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
-      const bundlePath = JSON.stringify(path.resolve(cwd, 'dist/native/app.bundle'))
-      shell.exec(`rm -rf ${bundlePath}`)
-      shell.exec(`rm -rf ${assetsDir}`)
-      shell.exec(`mkdir ${assetsDir}`)
-      shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
-      shell.exit(0)
+    if (target === 'native' && !exists(path.resolve(cwd, 'src/react-native'))) {
+      console.error('native not generated. run `npx nautil-cli init-native` first.')
+      shell.exit(1)
       return
     }
 
+    const { env = 'production', platform = 'ios' } = options
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
 
     if (!exists(configFile)) {
@@ -134,6 +119,17 @@ commander
       shell.exec('cp -r node_modules/miniprogram-element/src miniprogram_npm/miniprogram-element')
       shell.exec('cp -r node_modules/miniprogram-render/src miniprogram_npm/miniprogram-render')
     }
+    else if (target === 'native') {
+      const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
+      const bundlePath = JSON.stringify(path.resolve(cwd, 'dist/native/app.bundle'))
+
+      remove(path.resolve(cwd, 'dist/native'))
+      mkdir(path.resolve(cwd, 'dist/native'))
+      mkdir(assetsDir)
+
+      shell.cd(path.resolve(cwd, 'src/react-native'))
+      shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
+    }
   })
 
 commander
@@ -141,20 +137,15 @@ commander
   .option('-e, --env', 'production|development')
   .option('-p, --platform', 'ios|andriod')
   .action(function(target, options) {
-    const { env = 'development', platform = 'ios' } = options
-
     if (target === 'native') {
-      if (!exists(path.resolve(cwd, '.nautil/native'))) {
+      if (!exists(path.resolve(cwd, 'src/react-native'))) {
         console.error('native not generated. run `npx nautil-cli init-native` first.')
         shell.exit(1)
         return
       }
-
-      shell.cd(path.resolve(cwd, 'src/native'))
-      shell.exec(`react-native run-${platform}`)
-      return
     }
 
+    const { env = 'development', platform = 'ios' } = options
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
 
     if (!exists(configFile)) {
@@ -167,6 +158,16 @@ commander
     // build to generate dirs/files
     if (target === 'miniapp') {
       shell.exec(`nautil-cli build miniapp`)
+    }
+
+    if (target === 'native') {
+      shell.cd(path.resolve(cwd, 'src/react-native'))
+      shell.exec(`react-native run-${platform}`, function(code, stdout, stderr) {
+        console.log('Exit code:', code);
+        console.log('Program output:', stdout);
+        console.error('Program stderr:', stderr);
+      })
+      shell.cd(cwd)
     }
 
     shell.exec(`cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`)

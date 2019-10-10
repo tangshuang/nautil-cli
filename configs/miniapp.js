@@ -3,7 +3,6 @@
 const path = require('path')
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const { DefinePlugin } = require('webpack')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
 const basicConfig = require('./basic.config')
@@ -79,9 +78,6 @@ const customConfig = {
     ],
   },
   plugins: [
-    new DefinePlugin({
-      'process.env.APP_BASE_URL': JSON.stringify(process.env.WX_APP_BASE_URL),
-    }),
     new MiniCssExtractPlugin({
       filename: '[name].wxss',
     }),

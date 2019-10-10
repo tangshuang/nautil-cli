@@ -16,6 +16,11 @@ const customDevServerConfig = exists(customDevServerConfigFile) ? require(custom
 
 // 加载环境变量
 dotenv.config()
+const define_mapping = {}
+const define_keys = Object.keys(process.env)
+define_keys.forEach((key) => {
+  define_mapping['process.env.' + key] = JSON.stringify(process.env[key])
+})
 
 module.exports = {
   mode: env === 'production' ? 'production' : 'none',
@@ -48,9 +53,7 @@ module.exports = {
     ...customDevServerConfig,
   },
   plugins: [
-    new DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    }),
+    new DefinePlugin(define_mapping),
     new CleanWebpackPlugin(),
     new HashedModuleIdsPlugin(),
   ],
