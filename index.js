@@ -61,8 +61,8 @@ commander
 commander
   .command('init-native')
   .action(function() {
-    if (exists(path.resolve(cwd, 'src/react-native'))) {
-      console.error('native has been generated. clear `src/react-native` first.')
+    if (exists(path.resolve(cwd, 'react-native'))) {
+      console.error('Native has been generated. Remove `react-native` dir first.')
       shell.exit(1)
       return
     }
@@ -71,18 +71,23 @@ commander
     const json = readJSON(pkgfile)
     const { name } = json
     const appname = camelCase(name, { pascalCase: true })
-    shell.cd(path.resolve(cwd, 'src'))
+
+    shell.cd(cwd)
     shell.exec(`react-native init ${appname}`)
     shell.exec(`mv ${appname} react-native`)
-    shell.cd(cwd)
 
     const indexfile = path.resolve(cwd, 'src/native/index.js')
     const indexcontent = read(indexfile)
     const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
     write(indexfile, indexnewcontent)
 
-    remove(path.resolve(cwd, 'src/react-native/App.js'))
-    remove(path.resolve(cwd, 'src/react-native/index.js'))
+    remove(path.resolve(cwd, 'react-native/App.js'))
+    remove(path.resolve(cwd, 'react-native/index.js'))
+
+    // const srcDir = path.resolve(cwd, 'src')
+    // const indexFile = path.resolve(srcDir, 'native/index.js')
+    // shell.ln('-sf', srcDir, path.resolve(cwd, 'react-native/src'))
+    // shell.ln('-sf', indexFile, path.resolve(cwd, 'react-native/index.js'))
 
     shell.exit(0)
   })
@@ -92,8 +97,8 @@ commander
   .option('-e, --env', 'production|development')
   .option('-p, --platform', 'ios|andriod')
   .action(function(target, options) {
-    if (target === 'native' && !exists(path.resolve(cwd, 'src/react-native'))) {
-      console.error('native not generated. run `npx nautil-cli init-native` first.')
+    if (target === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
+      console.error('Native not generated. Run `npx nautil-cli init-native` first.')
       shell.exit(1)
       return
     }
@@ -135,7 +140,7 @@ commander
       mkdir(path.resolve(cwd, 'dist/native'))
       mkdir(assetsDir)
 
-      shell.cd(path.resolve(cwd, 'src/react-native'))
+      shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
   })
@@ -146,8 +151,8 @@ commander
   .option('-p, --platform', 'ios|andriod')
   .action(function(target, options) {
     if (target === 'native') {
-      if (!exists(path.resolve(cwd, 'src/react-native'))) {
-        console.error('native not generated. run `npx nautil-cli init-native` first.')
+      if (!exists(path.resolve(cwd, 'react-native'))) {
+        console.error('Native not generated. Run `npx nautil-cli init-native` first.')
         shell.exit(1)
         return
       }
@@ -169,8 +174,8 @@ commander
     }
 
     if (target === 'native') {
-      shell.cd(path.resolve(cwd, 'src/react-native'))
-      shell.exec(`react-native run-${platform}`, function(code, stdout, stderr) {
+      shell.cd(path.resolve(cwd, 'react-native'))
+      shell.exec(`react-native run-${platform}`, { async: true }, function(code, stdout, stderr) {
         console.log('Exit code:', code);
         console.log('Program output:', stdout);
         console.error('Program stderr:', stderr);

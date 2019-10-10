@@ -1,4 +1,4 @@
 node_modules/
 dist/
 .env
-src/react-native/index.js
+react-native/index.js

@@ -1,18 +1,12 @@
-// https://github.com/wechat-miniprogram/kbone/blob/develop/docs/quickstart.md
-
 const path = require('path')
 const merge = require('webpack-merge')
 
 const basicConfig = require('./basic.config')
-const babelLoaderConfig = require('./babel-loader.config')
 
 const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/native')
-const distDir = path.resolve(rootDir, 'src/react-native')
+const distDir = path.resolve(rootDir, 'react-native')
 
-const jsLoaders = [
-  babelLoaderConfig,
-]
 const cssLoaders = [
   'nautil-cli/css-object-loader',
 ]
@@ -22,7 +16,7 @@ const lessLoaders = [
 ]
 
 const customConfig = {
-  target: 'web', // 必需字段，不能修改
+  target: 'web',
   entry: path.resolve(srcDir, 'index.js'),
   output: {
     path: distDir,
@@ -32,8 +26,22 @@ const customConfig = {
     rules: [
       {
         test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
-        use: jsLoaders,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              plugins: [
+                ['transform-class-remove-static-properties', {
+                  mode: env === 'production' ? 'remove' : 'wrap',
+                }],
+                'react-require',
+                ['@babel/plugin-proposal-class-properties', {
+                  loose: true,
+                }],
+              ],
+            },
+          }
+        ],
       },
       {
         test: /\.css$/,
@@ -50,6 +58,11 @@ const customConfig = {
     hot: false,
     inline: false,
     liveReload: false,
+  },
+  // SHOULD MUST HERE
+  externals: {
+    'react': true,
+    'react-native': true,
   },
 }
 
