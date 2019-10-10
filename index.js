@@ -43,10 +43,10 @@ commander
     writeJSON(pkgfile, json)
 
     shell.cd(cwd)
-    shell.exec('npm i')
+    shell.exec('npm i --verbose')
     shell.exec('git init')
-    shell.cp('env', '.env')
-    shell.cp('gitignore', '.gitignore')
+    shell.mv('env', '.env')
+    shell.mv('gitignore', '.gitignore')
 
     shell.exec('npm i -D nautil-cli --verbose')
 
@@ -73,7 +73,7 @@ commander
     const appname = camelCase(name, { pascalCase: true })
 
     shell.cd(cwd)
-    shell.exec(`npm i -D react-native-cli`)
+    shell.exec(`npm i -D react-native-cli --verbose`)
     shell.exec(`react-native init ${appname}`)
     shell.exec(`mv ${appname} react-native`)
 
@@ -171,10 +171,10 @@ commander
 
     // build to generate dirs/files
     if (target === 'miniapp') {
-      shell.exec(`nautil-cli build miniapp`)
+      shell.exec(`nautil-cli build miniapp --env=${env}`)
     }
-
-    if (target === 'native') {
+    else if (target === 'native') {
+      shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`, { async: true }, function(code, stdout, stderr) {
         console.log('Exit code:', code);
