@@ -62,7 +62,7 @@ commander
   .command('init-native')
   .action(function() {
     if (exists(path.resolve(cwd, 'src/react-native'))) {
-      console.error('native has been generated. clear `src/native` first.')
+      console.error('native has been generated. clear `src/react-native` first.')
       shell.exit(1)
       return
     }
