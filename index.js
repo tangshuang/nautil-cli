@@ -45,7 +45,8 @@ commander
     shell.cd(cwd)
     shell.exec('npm i')
     shell.exec('git init')
-    shell.cp('.env_sample', '.env')
+    shell.cp('env', '.env')
+    shell.cp('gitignore', '.gitignore')
 
     shell.exec('npm i -D nautil-cli --verbose')
 
