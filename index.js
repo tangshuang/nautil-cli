@@ -34,11 +34,10 @@ commander
     }
 
     const files = path.resolve(__dirname, 'files') + '/.'
-    const target = path.resolve(cwd)
 
-    copy(files, target, true)
+    shell.exec(`cp -rf ${JSON.stringify(files)} ${JSON.stringify(cwd)}`)
 
-    const pkgfile = path.resolve(target, 'package.json')
+    const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
     json.name = name
     writeJSON(pkgfile, json)
@@ -48,7 +47,7 @@ commander
     shell.exec('git init')
     shell.cp('.env_sample', '.env')
 
-    shell.exec('npm i -D nautil-cli')
+    shell.exec('npm i -D nautil-cli --verbose')
 
     // generate react-native files
     if (options.native) {
@@ -73,6 +72,7 @@ commander
     const appname = camelCase(name, { pascalCase: true })
 
     shell.cd(cwd)
+    shell.exec(`npm i -D react-native-cli`)
     shell.exec(`react-native init ${appname}`)
     shell.exec(`mv ${appname} react-native`)
 
