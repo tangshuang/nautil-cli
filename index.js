@@ -166,30 +166,18 @@ commander
       return
     }
 
-    // delete dist files first
-    const config = require(configFile)
-    const distPath = config.output.path
-    if (target === 'native') {
-      const distFile = config.output.filename
-      shell.rm('-f', path.resolve(distPath, distFile))
-    }
-    else {
-      shell.rm('-rf', distPath)
-    }
-
-    shell.cd(cwd)
-
-    // build to generate dirs/files
     const cmd = `cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`
     if (target === 'native') {
       shell.echo('===============================\n\n')
       shell.echo('Make sure you have closed all Metro CLI!!')
       shell.echo('\n\n===============================')
+      shell.cd(cwd)
       shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
     }
     else {
+      shell.cd(cwd)
       shell.exec(cmd)
     }
   })
