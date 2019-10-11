@@ -12,7 +12,7 @@ const cssLoaderConfig = require('./css-loader.config')
 
 const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/miniapp')
-const distDir = path.resolve(rootDir, 'dist/miniapp')
+const distDir = path.resolve(rootDir, 'dist/wx-app')
 
 const jsLoaders = [
   babelLoaderConfig,

@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { exists, readJSON, writeJSON, read, write, remove, mkdir, scandir } = require('./utils/file')
+const { exists, readJSON, writeJSON, read, write, scandir } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -81,13 +81,8 @@ commander
     const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
     write(indexfile, indexnewcontent)
 
-    remove(path.resolve(cwd, 'react-native/App.js'))
-    remove(path.resolve(cwd, 'react-native/index.js'))
-
-    // const srcDir = path.resolve(cwd, 'src')
-    // const indexFile = path.resolve(srcDir, 'native/index.js')
-    // shell.ln('-sf', srcDir, path.resolve(cwd, 'react-native/src'))
-    // shell.ln('-sf', indexFile, path.resolve(cwd, 'react-native/index.js'))
+    shell.rm(path.resolve(cwd, 'react-native/App.js'))
+    shell.rm(path.resolve(cwd, 'react-native/index.js'))
 
     shell.exit(0)
   })
@@ -113,19 +108,30 @@ commander
     }
 
     const config = require(configFile)
-    const distPath = config.output.path
+    let distPath = config.output.path
+
+    // miniapp is build into sub common dir
+    if (target === 'miniapp') {
+      distPath = path.resolve(distPath, '..')
+    }
+
+    if (target === 'native') {
+      const distFile = config.output.filename
+      distPath = path.resolve(distPath, distFile)
+    }
 
     shell.rm('-rf', distPath)
+
     shell.cd(cwd)
     shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
 
-    if (!exists(outdir)) {
+    if (!exists(distPath)) {
       shell.exit(1)
       return
     }
 
     if (target === 'miniapp') {
-      shell.cd(outdir)
+      shell.cd(distPath)
       shell.exec('npm i')
       shell.rm('-rf', 'miniprogram_npm')
       shell.mkdir('miniprogram_npm')
@@ -134,7 +140,7 @@ commander
     }
     else if (target === 'native') {
       const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
-      const bundlePath = JSON.stringify(path.resolve(cwd, 'dist/native/app.bundle'))
+      const bundlePath = JSON.stringify(path.resolve(cwd, `dist/native/${platform}.bundle`))
 
       shell.mkdir('-p', assetsDir)
       shell.cd(path.resolve(cwd, 'react-native'))
@@ -163,28 +169,29 @@ commander
       return
     }
 
+    // delete dist files first
     const config = require(configFile)
     const distPath = config.output.path
+    if (target === 'native') {
+      const distFile = config.output.filename
+      shell.rm('-f', path.resolve(distPath, distFile))
+    }
+    else {
+      shell.rm('-rf', distPath)
+    }
 
-    shell.rm('-rf', distPath)
     shell.cd(cwd)
 
     // build to generate dirs/files
-    if (target === 'miniapp') {
-      shell.exec(`npx nautil-cli build miniapp --env=${env}`)
-    }
-    else if (target === 'native') {
-      shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
+    const cmd = `cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`
+    if (target === 'native') {
+      shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
-      shell.exec(`react-native run-${platform}`, { async: true }, function(code, stdout, stderr) {
-        console.log('Exit code:', code);
-        console.log('Program output:', stdout);
-        console.error('Program stderr:', stderr);
-      })
-      shell.cd(cwd)
+      shell.exec(`react-native run-${platform}`)
     }
-
-    shell.exec(`cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`)
+    else {
+      shell.exec(cmd)
+    }
   })
 
 commander.parse(process.argv)

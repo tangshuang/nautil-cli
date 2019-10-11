@@ -18,23 +18,23 @@ const lessLoaders = [
 ]
 
 const customConfig = {
-  target: 'node',
+  target: 'web',
   entry: path.resolve(srcDir, 'index.js'),
   output: {
     path: distDir,
     filename: 'index.js',
+    libraryTarget: 'commonjs2',
   },
   module: {
     rules: [
       {
         test: /\.(jsx|js)$/,
+        include: babelLoaderConfig.options.include,
         use: [
           {
             loader: 'babel-loader',
-            include: babelLoaderConfig.options.include,
             options: {
               presets: [
-                '@babel/preset-react',
                 'module:metro-react-native-babel-preset',
               ],
               plugins: [
@@ -65,6 +65,10 @@ const customConfig = {
     hot: false,
     inline: false,
     liveReload: false,
+  },
+  externals: {
+    'react-native': true,
+    'react': true,
   },
 }
 
