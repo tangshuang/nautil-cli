@@ -10,7 +10,7 @@ const srcDir = path.resolve(rootDir, 'src/native')
 const distDir = path.resolve(rootDir, 'react-native')
 
 const cssLoaders = [
-  'nautil-cli/css-object-loader',
+  'react-native-css-loader',
 ]
 const lessLoaders = [
   ...cssLoaders,
@@ -33,6 +33,7 @@ const customConfig = {
             loader: 'babel-loader',
             options: {
               presets: [
+                'metro-react-native-babel-preset',
                 '@babel/preset-react',
               ],
               plugins: [
@@ -63,11 +64,6 @@ const customConfig = {
     hot: false,
     inline: false,
     liveReload: false,
-  },
-  // SHOULD MUST HERE
-  externals: {
-    'react': true,
-    'react-native': true,
   },
 }
 

@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { copy, exists, readJSON, writeJSON, read, write, remove, mkdir, scandir } = require('./utils/file')
+const { exists, readJSON, writeJSON, read, write, remove, mkdir, scandir } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
