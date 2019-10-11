@@ -52,7 +52,7 @@ commander
 
     // generate react-native files
     if (options.native) {
-      shell.exec('nautil-cli init-native')
+      shell.exec('npx nautil-cli init-native')
     }
 
     shell.exit(0)
@@ -73,7 +73,6 @@ commander
     const appname = camelCase(name, { pascalCase: true })
 
     shell.cd(cwd)
-    shell.exec(`npm i -D react-native-cli --verbose`)
     shell.exec(`react-native init ${appname}`)
     shell.mv(appname, 'react-native')
 
@@ -172,7 +171,7 @@ commander
 
     // build to generate dirs/files
     if (target === 'miniapp') {
-      shell.exec(`nautil-cli build miniapp --env=${env}`)
+      shell.exec(`npx nautil-cli build miniapp --env=${env}`)
     }
     else if (target === 'native') {
       shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
