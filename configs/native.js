@@ -1,6 +1,8 @@
 const path = require('path')
 const merge = require('webpack-merge')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
+const env = process.env.NODE_ENV
 const basicConfig = require('./basic.config')
 
 const rootDir = process.cwd()
@@ -30,6 +32,9 @@ const customConfig = {
           {
             loader: 'babel-loader',
             options: {
+              presets: [
+                '@babel/preset-react',
+              ],
               plugins: [
                 ['transform-class-remove-static-properties', {
                   mode: env === 'production' ? 'remove' : 'wrap',
@@ -67,5 +72,12 @@ const customConfig = {
 }
 
 const config = merge(basicConfig, customConfig)
+
+// DONT CLEAN DIR
+config.plugins.forEach((plugin, i) => {
+  if (plugin instanceof CleanWebpackPlugin) {
+    config.plugins.splice(i, 1)
+  }
+})
 
 module.exports = config
