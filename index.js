@@ -48,7 +48,7 @@ commander
     shell.mv('gitignore', '.gitignore')
 
     shell.exec('git init')
-    shell.exec('npm nautil --verbose')
+    shell.exec('npm i nautil --verbose')
     shell.exec('npm i -D nautil-cli --verbose')
 
     // generate react-native files
