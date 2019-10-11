@@ -1,5 +1,4 @@
 const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
 
 const TerserJSPlugin = require('terser-webpack-plugin')
@@ -54,7 +53,6 @@ module.exports = {
   },
   plugins: [
     new DefinePlugin(define_mapping),
-    new CleanWebpackPlugin(),
     new HashedModuleIdsPlugin(),
   ],
 }

@@ -34,7 +34,6 @@ commander
     }
 
     const files = path.resolve(__dirname, 'files') + '/.'
-
     shell.exec(`cp -rf ${JSON.stringify(files)} ${JSON.stringify(cwd)}`)
 
     const pkgfile = path.resolve(cwd, 'package.json')
@@ -76,7 +75,7 @@ commander
     shell.cd(cwd)
     shell.exec(`npm i -D react-native-cli --verbose`)
     shell.exec(`react-native init ${appname}`)
-    shell.exec(`mv ${appname} react-native`)
+    shell.mv(appname, 'react-native')
 
     const indexfile = path.resolve(cwd, 'src/native/index.js')
     const indexcontent = read(indexfile)
@@ -115,10 +114,9 @@ commander
     }
 
     const config = require(configFile)
-    const outpath = config.output.path
-    const outdir = path.resolve(outpath, '..')
+    const distPath = config.output.path
 
-    shell.exec(`rm -rf ${JSON.stringify(outdir)}`)
+    shell.rm('-rf', distPath)
     shell.cd(cwd)
     shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
 
@@ -130,18 +128,16 @@ commander
     if (target === 'miniapp') {
       shell.cd(outdir)
       shell.exec('npm i')
-      shell.exec('rm -rf miniprogram_npm && mkdir miniprogram_npm')
-      shell.exec('cp -r node_modules/miniprogram-element/src miniprogram_npm/miniprogram-element')
-      shell.exec('cp -r node_modules/miniprogram-render/src miniprogram_npm/miniprogram-render')
+      shell.rm('-rf', 'miniprogram_npm')
+      shell.mkdir('miniprogram_npm')
+      shell.cp('-r', 'node_modules/miniprogram-element/src', 'miniprogram_npm/miniprogram-element')
+      shell.cp('-r', 'node_modules/miniprogram-render/src', 'miniprogram_npm/miniprogram-render')
     }
     else if (target === 'native') {
       const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
       const bundlePath = JSON.stringify(path.resolve(cwd, 'dist/native/app.bundle'))
 
-      remove(path.resolve(cwd, 'dist/native'))
-      mkdir(path.resolve(cwd, 'dist/native'))
-      mkdir(assetsDir)
-
+      shell.mkdir('-p', assetsDir)
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
@@ -168,6 +164,10 @@ commander
       return
     }
 
+    const config = require(configFile)
+    const distPath = config.output.path
+
+    shell.rm('-rf', distPath)
     shell.cd(cwd)
 
     // build to generate dirs/files

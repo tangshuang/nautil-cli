@@ -1,6 +1,5 @@
 const path = require('path')
 const merge = require('webpack-merge')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const env = process.env.NODE_ENV
 const basicConfig = require('./basic.config')
@@ -70,12 +69,5 @@ const customConfig = {
 }
 
 const config = merge(basicConfig, customConfig)
-
-// DONT CLEAN DIR
-config.plugins.forEach((plugin, i) => {
-  if (plugin instanceof CleanWebpackPlugin) {
-    config.plugins.splice(i, 1)
-  }
-})
 
 module.exports = config
