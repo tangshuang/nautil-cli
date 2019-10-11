@@ -86,8 +86,8 @@ commander
 
 commander
   .command('build <target>')
-  .option('-e, --env', 'production|development')
-  .option('-p, --platform', 'ios|andriod')
+  .option('-e, --env [env]', 'production|development')
+  .option('-p, --platform [platform]', 'ios|andriod')
   .action(function(target, options) {
     if (target === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native not generated. Run `npx nautil-cli init-native` first.')
@@ -97,6 +97,8 @@ commander
 
     const { env = 'production', platform = 'ios' } = options
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
+
+    console.log(target, options)
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
@@ -147,8 +149,8 @@ commander
 
 commander
   .command('dev <target>')
-  .option('-e, --env', 'production|development')
-  .option('-p, --platform', 'ios|andriod')
+  .option('-e, --env [env]', 'production|development')
+  .option('-p, --platform [platform]', 'ios|andriod')
   .action(function(target, options) {
     if (target === 'native') {
       if (!exists(path.resolve(cwd, 'react-native'))) {
