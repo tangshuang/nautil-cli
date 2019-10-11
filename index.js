@@ -176,6 +176,11 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
     }
+    else if (target === 'miniapp') {
+      shell.cd(cwd)
+      shell.exec(`npx nautil-cli build miniapp --env=${env}`)
+      shell.exec(cmd)
+    }
     else {
       shell.cd(cwd)
       shell.exec(cmd)
