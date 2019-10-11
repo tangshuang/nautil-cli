@@ -98,8 +98,6 @@ commander
     const { env = 'production', platform = 'ios' } = options
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
 
-    console.log(target, options)
-
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
       shell.exit(1)
