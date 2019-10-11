@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const env = process.env.NODE_ENV
 const basicConfig = require('./basic.config')
+const babelLoaderConfig = require('./babel-loader.config')
 
 const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/native')
@@ -31,10 +32,11 @@ const customConfig = {
         use: [
           {
             loader: 'babel-loader',
+            include: babelLoaderConfig.options.include,
             options: {
               presets: [
-                'metro-react-native-babel-preset',
                 '@babel/preset-react',
+                'module:metro-react-native-babel-preset',
               ],
               plugins: [
                 ['transform-class-remove-static-properties', {

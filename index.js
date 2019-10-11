@@ -43,11 +43,12 @@ commander
     writeJSON(pkgfile, json)
 
     shell.cd(cwd)
-    shell.exec('npm i --verbose')
-    shell.exec('git init')
+
     shell.mv('env', '.env')
     shell.mv('gitignore', '.gitignore')
 
+    shell.exec('git init')
+    shell.exec('npm nautil --verbose')
     shell.exec('npm i -D nautil-cli --verbose')
 
     // generate react-native files

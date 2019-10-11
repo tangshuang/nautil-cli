@@ -10,8 +10,6 @@
     "dev-miniapp": "nautil-cli dev miniapp",
     "dev-native": "nautil-cli dev native"
   },
-  "dependencies": {
-    "nautil": "^0.0.10"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }
