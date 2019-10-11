@@ -18,7 +18,7 @@ const lessLoaders = [
 ]
 
 const customConfig = {
-  target: 'web',
+  target: 'node',
   entry: path.resolve(srcDir, 'index.js'),
   output: {
     path: distDir,
