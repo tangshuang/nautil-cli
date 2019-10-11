@@ -2,3 +2,4 @@ node_modules/
 dist/
 .env
 react-native/index.js
+react-native/App.js

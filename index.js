@@ -81,9 +81,6 @@ commander
     const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
     write(indexfile, indexnewcontent)
 
-    shell.rm(path.resolve(cwd, 'react-native/App.js'))
-    shell.rm(path.resolve(cwd, 'react-native/index.js'))
-
     shell.exit(0)
   })
 
@@ -185,6 +182,9 @@ commander
     // build to generate dirs/files
     const cmd = `cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`
     if (target === 'native') {
+      shell.echo('===============================\n\n')
+      shell.echo('Make sure you have closed all Metro CLI!!')
+      shell.echo('\n\n===============================')
       shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
