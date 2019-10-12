@@ -43,6 +43,7 @@ commander
 
     shell.cd(cwd)
 
+    shell.cp('env', '.env_sample')
     shell.mv('env', '.env')
     shell.mv('gitignore', '.gitignore')
 
