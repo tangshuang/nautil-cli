@@ -87,8 +87,8 @@ commander
 
 commander
   .command('build <target>')
-  .option('-e, --env', 'production|development')
-  .option('-p, --platform', 'ios|andriod')
+  .option('-e, --env [env]', 'production|development')
+  .option('-p, --platform [platform]', 'ios|andriod')
   .action(function(target, options) {
     if (target === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native not generated. Run `npx nautil-cli init-native` first.')
@@ -148,8 +148,8 @@ commander
 
 commander
   .command('dev <target>')
-  .option('-e, --env', 'production|development')
-  .option('-p, --platform', 'ios|andriod')
+  .option('-e, --env [env]', 'production|development')
+  .option('-p, --platform [platform]', 'ios|andriod')
   .action(function(target, options) {
     if (target === 'native') {
       if (!exists(path.resolve(cwd, 'react-native'))) {
@@ -176,6 +176,11 @@ commander
       shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
+    }
+    else if (target === 'miniapp') {
+      shell.cd(cwd)
+      shell.exec(`npx nautil-cli build miniapp --env=${env}`)
+      shell.exec(cmd)
     }
     else {
       shell.cd(cwd)

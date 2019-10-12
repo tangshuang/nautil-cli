@@ -3,7 +3,7 @@
 const path = require('path')
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
+const MpPlugin = require('../mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
 const basicConfig = require('./basic.config')
 const mpConfig = require('./mp.config')
