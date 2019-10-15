@@ -120,7 +120,7 @@ commander
     shell.rm('-rf', distPath)
 
     shell.cd(cwd)
-    shell.exec(`cross-env NODE_ENV=${env} webpack --config=${JSON.stringify(configFile)}`)
+    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)}`)
 
     if (!exists(distPath)) {
       shell.exit(1)
@@ -166,7 +166,7 @@ commander
       return
     }
 
-    const cmd = `cross-env NODE_ENV=${env} webpack-dev-server --config=${JSON.stringify(configFile)}`
+    const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack-dev-server --config=${JSON.stringify(configFile)}`
     if (target === 'native') {
       shell.echo('===============================\n\n')
       shell.echo('Make sure you have closed all Metro CLI!!')
