@@ -8,13 +8,17 @@ const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/ssr')
 const distDir = path.resolve(rootDir, 'dist/ssr')
 
-const config = merge(basicConfig, {
+const mergedConfig = merge(basicConfig, {
   entry: path.resolve(srcDir, 'client.js'),
   output: {
     path: path.resolve(distDir, 'public'),
     publicPath: '/',
   },
-  plugins: basicConfig.plugins.map((plugin) => {
+})
+
+const config = {
+  ...mergedConfig,
+  plugins: mergedConfig.plugins.map((plugin) => {
     if (plugin instanceof HtmlPlugin) {
       return new HtmlPlugin({
         template: path.resolve(srcDir, 'index.html'),
@@ -25,9 +29,9 @@ const config = merge(basicConfig, {
       return plugin
     }
   }),
-})
 
-// disable webpack-dev-server
-delete config.devServer
+  // disable webpack-dev-server
+  devServer: undefined,
+}
 
 module.exports = config

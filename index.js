@@ -89,8 +89,7 @@ commander
   .command('build <target>')
   .option('-e, --env [env]', 'production|development')
   .option('-p, --platform [platform]', 'ios|andriod')
-  .option('-w, --watch [watch]', 'restart building when file changing')
-  .option('-a, --async [async]', 'run building asyncly, always using with other tasks together')
+  .option('-c, --clean [clean]', 'remove the output dir before build')
   .action(function(target, options) {
     if (target === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native not generated. Run `npx nautil-cli init-native` first.')
@@ -98,7 +97,11 @@ commander
       return
     }
 
-    const { env = 'production', platform = 'ios', watch, async } = options
+    const {
+      env = 'production',
+      platform = 'ios',
+      clean = env === 'production' ? true : false,
+    } = options
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
 
     if (!exists(configFile)) {
@@ -120,22 +123,17 @@ commander
       distPath = path.resolve(distPath, distFile)
     }
 
-    shell.rm('-rf', distPath)
+    if (clean) {
+      shell.rm('-rf', distPath)
+    }
+
     shell.cd(cwd)
 
     let cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)}`
-    if (watch) {
-      cmd += ' --watch'
-    }
-    shell.exec(cmd, { async })
-
-    // NOTICE: when using async, the following building of miniapp and native will not run
-    // only javascript building run in async mode
-    if (async) {
-      return
-    }
+    shell.exec(cmd)
 
     if (!exists(distPath)) {
+      console.error(`${distPath} is not existing.`)
       shell.exit(1)
       return
     }

@@ -9,10 +9,12 @@
     "dev-wc": "nautil-cli dev web-component",
     "dev-miniapp": "nautil-cli dev miniapp",
     "dev-native": "nautil-cli dev native",
-    "build-ssr": "nautil-cli build ssr-client && nautil-cli build ssr-server",
-    "dev-ssr:server": "nautil-cli build ssr-server --watch --env=development --async",
-    "dev-ssr:client": "nautil-cli build ssr-client --watch --env=development --async",
-    "dev-ssr": "nautil-cli build ssr-server && npm run dev-ssr:client && npm run dev-ssr:server && cd dist/ssr && nodemon server.js"
+    "build-ssr:client": "nautil-cli build ssr-client",
+    "build-ssr:server": "nautil-cli build ssr-server",
+    "build-ssr": "npm run build-ssr:server && npm run build-ssr:client",
+    "dev-ssr:server": "nautil-cli build ssr-server --watch --env=development",
+    "dev-ssr:client": "nautil-cli build ssr-client --watch --env=development",
+    "dev-ssr": "nautil-cli build ssr-server && (npm run dev-ssr:server & npm run dev-ssr:client & (cd dist/ssr && nodemon server.js))"
   },
   "dependencies": {},
   "devDependencies": {}

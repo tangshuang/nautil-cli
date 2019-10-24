@@ -23,10 +23,26 @@ const lessLoaders = [
   'less-loader',
 ]
 
+class FilterFiles {
+  apply(compiler) {
+    compiler.hooks.emit.tap('FilterFilesPlugin', (compilation) => {
+      const { options } = compilation
+      const { output } = options
+      compilation.chunks.forEach((chunk) => {
+        chunk.files
+        .filter(file => file.indexOf(output.filename) !== 0)
+        .forEach(file => {
+          delete compilation.assets[file]
+        })
+      })
+    })
+  }
+}
+
 const externals = [
   nodeExternals({
     whitelist: [
-      'nautil',
+      /nautil/,
       'ts-fns',
       'storagex',
       'tyshemo',
@@ -74,6 +90,13 @@ const customConfig = {
     url: false,
     setImmediate: false,
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css',
+    }),
+    new FilterFiles(),
+  ],
   externals,
 }
 
