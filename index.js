@@ -128,9 +128,7 @@ commander
     }
 
     shell.cd(cwd)
-
-    let cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)}`
-    shell.exec(cmd)
+    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)}`)
 
     if (!exists(distPath)) {
       console.error(`${distPath} is not existing.`)
@@ -154,6 +152,10 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
+    else if (target === 'ssr') {
+      const ssrClientConfigFile = configFile.replace('ssr.js', 'ssr-client.js')
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV="ssr-client" webpack --config=${JSON.stringify(ssrClientConfigFile)}`)
+    }
   })
 
 commander
@@ -174,12 +176,29 @@ commander
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
+      shell.exit(1)
+      return
+    }
+
+    if (target === 'ssr') {
+      const config = require(configFile)
+      const output = config.output
+      shell.cd(cwd)
+      shell.touch(path.resolve(output.path, output.filename)) // create a empty file first
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
+      const ssrClientConfigFile = configFile.replace('ssr.js', 'ssr-client.js')
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(ssrClientConfigFile)} --watch`, { async: true })
+      shell.cd(output.path)
+      shell.exec('nodemon ' + output.filename)
+      // there is no devServer in ssr config,
+      // so it should return before devServer checking
       return
     }
 
     const config = require(configFile)
     if (!config.devServer) {
       console.error(`config.devServer is not existing in your config options.`)
+      shell.exit(1)
       return
     }
 
