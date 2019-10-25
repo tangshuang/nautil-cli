@@ -11,6 +11,7 @@ const includeFiles = [
   path.resolve(rootDir, 'node_modules/etx/src'),
   path.resolve(rootDir, 'node_modules/nautil'),
   path.resolve(rootDir, 'node_modules/react-native'),
+  path.resolve(rootDir, 'node_modules/@babel/runtime/helpers/esm'),
   path.resolve(rootDir, 'src'),
 ]
 

@@ -48,6 +48,9 @@ const externals = [
       'tyshemo',
       'rxjs',
       'ext',
+      'i18next',
+      'react-native',
+      /\@babel\/runtime\/helpers\/esm/,
     ],
   }),
 ]

@@ -32,7 +32,7 @@ module.exports = {
       'storagex': 'storagex/src/storagex.js',
       'tyshemo': 'tyshemo/src/index.js',
       'rxjs': 'rxjs/_esm2015/index.js',
-      'etx': 'etx/src/etx.js'
+      'etx': 'etx/src/etx.js',
     },
     modules: [
       path.resolve(rootDir, 'node_modules'),
