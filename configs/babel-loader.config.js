@@ -9,6 +9,7 @@ const includeFiles = [
   path.resolve(rootDir, 'node_modules/tyshemo/src'),
   path.resolve(rootDir, 'node_modules/rxjs/_esm2015'),
   path.resolve(rootDir, 'node_modules/etx/src'),
+  path.resolve(rootDir, 'node_modules/asw/src'),
   path.resolve(rootDir, 'node_modules/nautil'),
   path.resolve(rootDir, 'node_modules/react-native'),
   path.resolve(rootDir, 'node_modules/@babel/runtime/helpers/esm'),

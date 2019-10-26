@@ -152,10 +152,6 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
-    else if (target === 'ssr') {
-      const ssrClientConfigFile = configFile.replace('ssr.js', 'ssr-client.js')
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV="ssr-client" webpack --config=${JSON.stringify(ssrClientConfigFile)}`)
-    }
   })
 
 commander
@@ -186,8 +182,6 @@ commander
       shell.cd(cwd)
       shell.touch(path.resolve(output.path, output.filename)) // create a empty file first
       shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
-      const ssrClientConfigFile = configFile.replace('ssr.js', 'ssr-client.js')
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(ssrClientConfigFile)} --watch`, { async: true })
       shell.cd(output.path)
       shell.exec('nodemon ' + output.filename)
       // there is no devServer in ssr config,
@@ -214,6 +208,7 @@ commander
     }
     else if (target === 'miniapp') {
       shell.cd(cwd)
+      // files/dirs should exist before serve up
       shell.exec(`npx nautil-cli build miniapp --env=${env}`)
       shell.exec(cmd)
     }

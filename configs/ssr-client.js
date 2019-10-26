@@ -1,7 +1,7 @@
 const merge = require('webpack-merge')
 const HtmlPlugin = require('html-webpack-plugin')
 
-const basicConfig = require('./web')
+const basicConfig = require('./dom')
 const path = require('path')
 
 const rootDir = process.cwd()

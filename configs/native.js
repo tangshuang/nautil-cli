@@ -25,6 +25,11 @@ const customConfig = {
     filename: 'index.js',
     libraryTarget: 'commonjs2',
   },
+  resolve: {
+    alias: {
+      'nautil/components': 'nautil/native-components',
+    },
+  },
   module: {
     rules: [
       {

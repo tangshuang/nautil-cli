@@ -33,7 +33,8 @@ function getPackageDependencies(name, dependencies = {}) {
   return dependencies
 }
 
-const deps = getPackageDependencies('nautil')
+const nautilDeps = getPackageDependencies('nautil')
+const reactDeps = getPackageDependencies('react')
 
 const jsLoaders = [
   babelLoaderConfig,
@@ -54,6 +55,11 @@ const customConfig = {
     path: distDir,
     filename: '[name].[hash].js',
     chunkFilename: '[id].[hash].js',
+  },
+  resolve: {
+    alias: {
+      'nautil/components': 'nautil/dom-components',
+    },
   },
   module: {
     rules: [
@@ -93,7 +99,10 @@ const customConfig = {
           name(module) {
             const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
             const [pkg, ver] = packageName.split('@')
-            if (deps[pkg]) {
+            if (pkg.indexOf('react') === 0 || reactDeps[pkg]) {
+              return `react-vendors`
+            }
+            else if (nautilDeps[pkg]) {
               return `nautil-vendors`
             }
             else {

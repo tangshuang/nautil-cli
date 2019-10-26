@@ -33,6 +33,7 @@ module.exports = {
       'tyshemo': 'tyshemo/src/index.js',
       'rxjs': 'rxjs/_esm2015/index.js',
       'etx': 'etx/src/etx.js',
+      'asw': 'asw/src/index.js',
     },
     modules: [
       path.resolve(rootDir, 'node_modules'),

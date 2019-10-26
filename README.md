@@ -31,7 +31,7 @@ To build project to code into bundle files.
 nautil-cli build <target> [--platform=ios|andriod] [--env=development|production]
 ```
 
-- target: web|web-component|miniapp|native|any custom webpack config filename in `.natuil` dir
+- target: dom|web-component|miniapp|native|ssr|ssr-client|any custom webpack config filename in `.natuil` dir
 - platform: only used for native
 - env: for webpack mode option and process.env.NODE_ENV
 

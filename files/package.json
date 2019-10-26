@@ -9,8 +9,12 @@
     "dev-wc": "nautil-cli dev web-component",
     "dev-miniapp": "nautil-cli dev miniapp",
     "dev-native": "nautil-cli dev native",
-    "build-ssr": "nautil-cli build ssr",
-    "dev-ssr": "nautil-cli dev ssr"
+    "build-ssr:server": "nautil-cli build ssr",
+    "build-ssr:client": "nautil-cli build ssr-client",
+    "build-ssr": "npm run build-ssr:server && npm run build-ssr:client",
+    "dev-ssr:server": "nautil-cli dev ssr",
+    "dev-ssr:client": "nautil-cli dev ssr-client",
+    "dev-ssr": "npm run dev-ssr:client & npm run dev-ssr:server"
   },
   "dependencies": {},
   "devDependencies": {}
