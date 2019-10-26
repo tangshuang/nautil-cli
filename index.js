@@ -16,7 +16,7 @@ commander
   .version(version)
 
 commander
-  .command('init <name>')
+  .command('init [name]')
   .description('Create an empty nautil application.')
   .option('-n, --native', 'whether to generate react-native files')
   .action(function(name, options) {
