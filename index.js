@@ -28,9 +28,8 @@ commander
     }
 
     if (!name) {
-      console.error('Please give a project name.')
-      shell.exit(1)
-      return
+      name = path.basename(cwd)
+      console.error('We will use the dir name as project name: ' + name)
     }
 
     const files = path.resolve(__dirname, 'files') + '/.'
