@@ -18,7 +18,8 @@ commander
 commander
   .command('init [name]')
   .description('Create an empty nautil application.')
-  .option('-n, --native', 'whether to generate react-native files')
+  .option('-n, --native [native]', 'whether to generate react-native files')
+  .option('--verbose [verbose]', 'show debug logs')
   .action(function(name, options) {
     const currentfiles = scandir(cwd)
     if (currentfiles && currentfiles.length) {
@@ -46,9 +47,11 @@ commander
     shell.mv('env', '.env')
     shell.mv('gitignore', '.gitignore')
 
+    const debug = options.verbose ? ' --verbose' : ''
+
     shell.exec('git init')
-    shell.exec('npm i nautil --verbose')
-    shell.exec('npm i -D nautil-cli --verbose')
+    shell.exec('npm i nautil' + debug)
+    shell.exec('npm i -D nautil-cli' + debug)
 
     // generate react-native files
     if (options.native) {

@@ -1,11 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "build-web": "nautil-cli build web",
+    "build-dom": "nautil-cli build dom",
     "build-wc": "nautil-cli build web-component",
     "build-miniapp": "nautil-cli build miniapp",
     "build-native": "nautil-cli build native",
-    "dev-web": "nautil-cli dev web",
+    "dev-dom": "nautil-cli dev dom",
     "dev-wc": "nautil-cli dev web-component",
     "dev-miniapp": "nautil-cli dev miniapp",
     "dev-native": "nautil-cli dev native",
