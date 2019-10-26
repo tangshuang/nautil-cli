@@ -178,16 +178,23 @@ commander
       return
     }
 
+    // there is no devServer in ssr config,
+    // so it should return before devServer checking
     if (target === 'ssr') {
       const config = require(configFile)
       const output = config.output
+      shell.mkdir('-p', output.path)
+      shell.cd(output.path)
+      shell.touch(output.filename) // create a empty file first
       shell.cd(cwd)
-      shell.touch(path.resolve(output.path, output.filename)) // create a empty file first
       shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
       shell.cd(output.path)
       shell.exec('nodemon ' + output.filename)
-      // there is no devServer in ssr config,
-      // so it should return before devServer checking
+      return
+    }
+    else if (target === 'ssr-client') {
+      shell.cd(cwd)
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`)
       return
     }
 

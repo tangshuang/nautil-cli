@@ -8,8 +8,8 @@ const babelLoaderConfig = require('./babel-loader.config')
 const cssLoaderConfig = require('./css-loader.config')
 
 const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/web')
-const distDir = path.resolve(rootDir, 'dist/web')
+const srcDir = path.resolve(rootDir, 'src/dom')
+const distDir = path.resolve(rootDir, 'dist/dom')
 
 function getPackageDependencies(name, dependencies = {}) {
   try {
@@ -99,14 +99,14 @@ const customConfig = {
           name(module) {
             const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
             const [pkg, ver] = packageName.split('@')
-            if (pkg.indexOf('react') === 0 || reactDeps[pkg]) {
+            if (pkg.indexOf('react') === 0 || reactDeps[pkg] || pkg === 'scheduler') {
               return `react-vendors`
             }
             else if (nautilDeps[pkg]) {
               return `nautil-vendors`
             }
             else {
-              return `vendors`
+              return `main`
             }
           },
           filename: '[name].[hash].js',

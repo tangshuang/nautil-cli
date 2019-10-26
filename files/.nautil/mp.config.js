@@ -9,7 +9,8 @@ module.exports = {
   router: {
     // 路由可以是多个值，支持动态路由
     home: [
-      '/(home|index)?',
+      // 使用正则表达式的字符串形式，会被传入 new RegExp 中
+      '(home|index)?',
     ],
   },
   // app 配置，同 https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#window

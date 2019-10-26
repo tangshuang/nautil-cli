@@ -55,11 +55,14 @@ const customConfig = {
       chunkFilename: '[id].[hash].css',
     }),
     new WebComponentCssPlugin(),
-    new HtmlPlugin({
-      template: path.resolve(srcDir, 'index.html'),
-      filename: path.resolve(distDir, 'index.html'),
-    }),
   ],
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  customConfig.plugins.push(new HtmlPlugin({
+    template: path.resolve(srcDir, 'index.html'),
+    filename: path.resolve(distDir, 'index.html'),
+  }))
 }
 
 const config = merge(basicConfig, customConfig)

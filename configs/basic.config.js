@@ -40,7 +40,7 @@ module.exports = {
     ],
   },
   optimization: {
-    minimizer: env === 'production' ? [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})] : undefined,
+    minimizer: env === 'production' ? [new TerserJSPlugin({ extractComments: true }), new OptimizeCSSAssetsPlugin({})] : undefined,
     minimize: env === 'production' ? true : false,
     usedExports: true,
     sideEffects: true,

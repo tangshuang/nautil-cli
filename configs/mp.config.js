@@ -14,7 +14,7 @@ const basicMpConfig = {
   router: {
     // 路由可以是多个值，支持动态路由
     home: [
-      '/(home|index)?',
+      '(home|index)?',
     ],
   },
   // 特殊路由跳转

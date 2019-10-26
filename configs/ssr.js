@@ -2,6 +2,7 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
+const FilterFilesPlugin = require('../filter-files-plugin')
 
 const basicConfig = require('./basic.config')
 const babelLoaderConfig = require('./babel-loader.config')
@@ -22,22 +23,6 @@ const lessLoaders = [
   ...cssLoaders,
   'less-loader',
 ]
-
-class FilterFiles {
-  apply(compiler) {
-    compiler.hooks.emit.tap('FilterFilesPlugin', (compilation) => {
-      const { options } = compilation
-      const { output } = options
-      compilation.chunks.forEach((chunk) => {
-        chunk.files
-        .filter(file => file.indexOf(output.filename) !== 0)
-        .forEach(file => {
-          delete compilation.assets[file]
-        })
-      })
-    })
-  }
-}
 
 const externals = [
   nodeExternals({
@@ -98,7 +83,12 @@ const customConfig = {
       filename: '[name].[hash].css',
       chunkFilename: '[id].[hash].css',
     }),
-    new FilterFiles(),
+    new FilterFilesPlugin({
+      match(file, options) {
+        const { output } = options
+        return file.indexOf(output.filename) !== 0
+      },
+    }),
   ],
   externals,
 }
