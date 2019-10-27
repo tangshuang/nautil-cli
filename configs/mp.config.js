@@ -48,6 +48,12 @@ const basicMpConfig = {
       pullDownRefresh: true,
     },
   },
+  generate: {
+    globalVars: [
+      ['requestAnimationFrame'],
+      ['cancelAnimationFrame'],
+    ],
+  },
   // 优化
   optimization: {
     domSubTreeLevel: 10, // 将多少层级的 dom 子树作为一个自定义组件渲染，支持 1 - 10，默认值为 10
@@ -73,10 +79,6 @@ const basicMpConfig = {
   packageConfig: {
     author: 'nautil',
   },
-  globalVars: [
-    'requestAnimationFrame',
-    'cancelAnimationFrame',
-  ],
 }
 
 const config = {

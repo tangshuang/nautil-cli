@@ -28,7 +28,7 @@
     "less-loader": "^5.0.0",
     "metro-react-native-babel-preset": "^0.56.0",
     "mini-css-extract-plugin": "^0.8.0",
-    "mp-webpack-plugin": "^0.4.1",
+    "mp-webpack-plugin": "^0.4.4",
     "nodemon": "^1.19.4",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "react-native-cli": "^2.0.1",
