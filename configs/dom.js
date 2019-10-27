@@ -106,7 +106,7 @@ const customConfig = {
               return `nautil-vendors`
             }
             else {
-              return `main`
+              return `vendors`
             }
           },
           filename: '[name].[hash].js',
