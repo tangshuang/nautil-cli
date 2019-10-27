@@ -34,7 +34,7 @@ module.exports = {
       'rxjs': 'rxjs/_esm2015/index.js',
       'etx': 'etx/src/etx.js',
       'asw': 'asw/src/index.js',
-      '../components/index.js': process.env.RUNTIME_ENV === 'native' ? '../native-components/index.js' : '../dom-components/index.js',
+      'nautil/lib/components': process.env.RUNTIME_ENV === 'native' ? 'nautil/lib/native-components' : 'nautil/lib/dom-components',
     },
     modules: [
       path.resolve(rootDir, 'node_modules'),
