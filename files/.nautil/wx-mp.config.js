@@ -1,5 +1,6 @@
 // https://github.com/wechat-miniprogram/kbone/blob/develop/docs/quickstart.md
-// https://github.com/tangshuang/nautil-cli/blob/master/configs/mp.config.js
+// https://github.com/wechat-miniprogram/kbone/blob/develop/docs/miniprogram.config.js
+
 module.exports = {
   // 页面 origin，默认是 https://miniprogram.default
   origin: 'https://domain.com',

@@ -1,4 +1,4 @@
-const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
+const { DefinePlugin, HashedModuleIdsPlugin, NormalModuleReplacementPlugin } = require('webpack')
 const path = require('path')
 
 const TerserJSPlugin = require('terser-webpack-plugin')
@@ -10,6 +10,7 @@ const env = process.env.NODE_ENV
 const rootDir = process.cwd()
 
 const { exists } = require('../utils/file')
+const { escape } = require('../utils/regexp')
 const customDevServerConfigFile = path.resolve(rootDir, '.nautil/dev-server.config.js')
 const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
 
@@ -34,7 +35,6 @@ module.exports = {
       'rxjs': 'rxjs/_esm2015/index.js',
       'etx': 'etx/src/etx.js',
       'asw': 'asw/src/index.js',
-      'nautil/lib/components': process.env.RUNTIME_ENV === 'native' ? 'nautil/lib/native-components' : 'nautil/lib/dom-components',
     },
     modules: [
       path.resolve(rootDir, 'node_modules'),
@@ -56,5 +56,11 @@ module.exports = {
   plugins: [
     new DefinePlugin(define_mapping),
     new HashedModuleIdsPlugin(),
+    new NormalModuleReplacementPlugin(
+      new RegExp(escape(path.resolve(cwd, 'node_modules/nautil/lib/components'))),
+      resource => process.env.RUNTIME_ENV === 'native'
+        ? resource.request.replace('nautil/lib/components', 'nautil/lib/native-components')
+        : resource.request.replace('nautil/lib/components', 'nautil/lib/dom-components')
+    )
   ],
 }

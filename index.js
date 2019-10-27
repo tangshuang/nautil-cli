@@ -116,9 +116,10 @@ commander
     let distPath = config.output.path
 
     // miniapp is build into sub common dir
-    if (target === 'miniapp') {
+    if (target === 'wx-mp') {
       distPath = path.resolve(distPath, '..')
     }
+    // todo: alipay-mp
 
     if (target === 'native') {
       const distFile = config.output.filename
@@ -138,7 +139,7 @@ commander
       return
     }
 
-    if (target === 'miniapp') {
+    if (target === 'wx-mp') {
       shell.cd(distPath)
       shell.exec('npm i')
       shell.rm('-rf', 'miniprogram_npm')
@@ -215,10 +216,10 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
     }
-    else if (target === 'miniapp') {
+    else if (target === 'wx-mp') {
       shell.cd(cwd)
       // files/dirs should exist before serve up
-      shell.exec(`npx nautil-cli build miniapp --env=${env}`)
+      shell.exec(`npx nautil-cli build wx-mp --env=${env}`)
       shell.exec(cmd)
     }
     else {

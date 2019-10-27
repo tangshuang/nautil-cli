@@ -3,11 +3,11 @@
   "scripts": {
     "build-dom": "nautil-cli build dom",
     "build-wc": "nautil-cli build web-component",
-    "build-miniapp": "nautil-cli build miniapp",
+    "build-wx-mp": "nautil-cli build wx-mp",
     "build-native": "nautil-cli build native",
     "dev-dom": "nautil-cli dev dom",
     "dev-wc": "nautil-cli dev web-component",
-    "dev-miniapp": "nautil-cli dev miniapp",
+    "dev-wx-mp": "nautil-cli dev wx-mp",
     "dev-native": "nautil-cli dev native",
     "build-ssr:server": "nautil-cli build ssr",
     "build-ssr:client": "nautil-cli build ssr-client",
