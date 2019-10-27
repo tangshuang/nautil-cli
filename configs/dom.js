@@ -56,11 +56,6 @@ const customConfig = {
     filename: '[name].[hash].js',
     chunkFilename: '[id].[hash].js',
   },
-  resolve: {
-    alias: {
-      'nautil/components': 'nautil/dom-components',
-    },
-  },
   module: {
     rules: [
       {
