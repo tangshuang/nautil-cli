@@ -42,7 +42,12 @@ module.exports = {
     ],
   },
   optimization: {
-    minimizer: env === 'production' ? [new TerserJSPlugin({ extractComments: true }), new OptimizeCSSAssetsPlugin({})] : undefined,
+    minimizer: env === 'production' ? [
+      new TerserJSPlugin({ extractComments: true }),
+      new OptimizeCSSAssetsPlugin({
+        assetNameRegExp: /\.(css|wxss)$/g,
+      }),
+    ] : undefined,
     minimize: env === 'production' ? true : false,
     usedExports: true,
     sideEffects: true,
@@ -62,6 +67,6 @@ module.exports = {
       source => process.env.RUNTIME_ENV === 'native'
         ? source.replace('nautil/lib/components', 'nautil/lib/native-components')
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
-    )
+    ),
   ],
 }
