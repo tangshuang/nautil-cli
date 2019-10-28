@@ -1,6 +1,6 @@
 {
   "name": "nautil-cli",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "CLI from nautil.",
   "main": "index.js",
   "bin": {
