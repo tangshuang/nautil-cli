@@ -1,20 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "build-dom": "nautil-cli build dom",
-    "build-wc": "nautil-cli build web-component",
-    "build-wx-mp": "nautil-cli build wx-mp",
-    "build-native": "nautil-cli build native",
-    "dev-dom": "nautil-cli dev dom",
-    "dev-wc": "nautil-cli dev web-component",
-    "dev-wx-mp": "nautil-cli dev wx-mp",
-    "dev-native": "nautil-cli dev native",
-    "build-ssr:server": "nautil-cli build ssr",
-    "build-ssr:client": "nautil-cli build ssr-client",
-    "build-ssr": "npm run build-ssr:server && npm run build-ssr:client",
-    "dev-ssr:server": "nautil-cli dev ssr",
-    "dev-ssr:client": "nautil-cli dev ssr-client",
-    "dev-ssr": "npm run dev-ssr:client & npm run dev-ssr:server"
+    "build:dom": "nautil-cli build dom",
+    "build:webc": "nautil-cli build web-component",
+    "build:wx-mp": "nautil-cli build wx-mp",
+    "build:native": "nautil-cli build native",
+    "build:ssr": "nautil-cli build ssr",
+    "dev:dom": "nautil-cli dev dom",
+    "dev:webc": "nautil-cli dev web-component",
+    "dev:wx-mp": "nautil-cli dev wx-mp",
+    "dev:native": "nautil-cli dev native",
+    "dev:ssr": "nautil-cli dev ssr"
   },
   "dependencies": {},
   "devDependencies": {}

@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
 const basicConfig = require('./basic.config')
-const mpConfig = require('./mp.config')
+const mpConfig = require('./wx-mp.config')
 const babelLoaderConfig = require('./babel-loader.config')
 const cssLoaderConfig = require('./css-loader.config')
 

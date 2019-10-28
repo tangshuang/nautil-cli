@@ -1,5 +1,6 @@
-const { DefinePlugin, HashedModuleIdsPlugin, NormalModuleReplacementPlugin } = require('webpack')
+const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
 const path = require('path')
+const ModuleReplacePlugin = require('../module-replace-webpack-plugin')
 
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -56,11 +57,11 @@ module.exports = {
   plugins: [
     new DefinePlugin(define_mapping),
     new HashedModuleIdsPlugin(),
-    new NormalModuleReplacementPlugin(
-      new RegExp(escape(path.resolve(cwd, 'node_modules/nautil/lib/components'))),
-      resource => process.env.RUNTIME_ENV === 'native'
-        ? resource.request.replace('nautil/lib/components', 'nautil/lib/native-components')
-        : resource.request.replace('nautil/lib/components', 'nautil/lib/dom-components')
+    new ModuleReplacePlugin(
+      source => source.indexOf(path.resolve(rootDir, 'node_modules/nautil/lib/components')) === 0,
+      source => process.env.RUNTIME_ENV === 'native'
+        ? source.replace('nautil/lib/components', 'nautil/lib/native-components')
+        : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
     )
   ],
 }

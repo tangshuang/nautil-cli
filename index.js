@@ -88,12 +88,12 @@ commander
   })
 
 commander
-  .command('build <target>')
+  .command('build <runtime>')
   .option('-e, --env [env]', 'production|development')
   .option('-p, --platform [platform]', 'ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
-  .action(function(target, options) {
-    if (target === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
+  .action(function(runtime, options) {
+    if (runtime === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native not generated. Run `npx nautil-cli init-native` first.')
       shell.exit(1)
       return
@@ -104,7 +104,7 @@ commander
       platform = 'ios',
       clean = env === 'production' ? true : false,
     } = options
-    const configFile = path.resolve(cwd, '.nautil', target + '.js')
+    const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
@@ -116,12 +116,12 @@ commander
     let distPath = config.output.path
 
     // miniapp is build into sub common dir
-    if (target === 'wx-mp') {
+    if (runtime === 'wx-mp') {
       distPath = path.resolve(distPath, '..')
     }
     // todo: alipay-mp
 
-    if (target === 'native') {
+    if (runtime === 'native') {
       const distFile = config.output.filename
       distPath = path.resolve(distPath, distFile)
     }
@@ -131,7 +131,7 @@ commander
     }
 
     shell.cd(cwd)
-    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)}`)
+    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} webpack --config=${JSON.stringify(configFile)}`)
 
     if (!exists(distPath)) {
       console.error(`${distPath} is not existing.`)
@@ -139,7 +139,7 @@ commander
       return
     }
 
-    if (target === 'wx-mp') {
+    if (runtime === 'wx-mp') {
       shell.cd(distPath)
       shell.exec('npm i')
       shell.rm('-rf', 'miniprogram_npm')
@@ -147,7 +147,7 @@ commander
       shell.cp('-r', 'node_modules/miniprogram-element/src', 'miniprogram_npm/miniprogram-element')
       shell.cp('-r', 'node_modules/miniprogram-render/src', 'miniprogram_npm/miniprogram-render')
     }
-    else if (target === 'native') {
+    else if (runtime === 'native') {
       const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
       const bundlePath = JSON.stringify(path.resolve(cwd, `dist/native/${platform}.bundle`))
 
@@ -155,14 +155,22 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
+    else if (runtime === 'ssr') {
+      // client build should be after server side build,
+      // or the dist dir will be remove
+      const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
+      if (exists(clientConfigFile)) {
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client webpack --config=${JSON.stringify(clientConfigFile)}`)
+      }
+    }
   })
 
 commander
-  .command('dev <target>')
+  .command('dev <runtime>')
   .option('-e, --env [env]', 'production|development')
   .option('-p, --platform [platform]', 'ios|andriod')
-  .action(function(target, options) {
-    if (target === 'native') {
+  .action(function(runtime, options) {
+    if (runtime === 'native') {
       if (!exists(path.resolve(cwd, 'react-native'))) {
         console.error('Native not generated. Run `npx nautil-cli init-native` first.')
         shell.exit(1)
@@ -171,7 +179,7 @@ commander
     }
 
     const { env = 'development', platform = 'ios' } = options
-    const configFile = path.resolve(cwd, '.nautil', target + '.js')
+    const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
@@ -181,21 +189,24 @@ commander
 
     // there is no devServer in ssr config,
     // so it should return before devServer checking
-    if (target === 'ssr') {
+    if (runtime === 'ssr') {
       const config = require(configFile)
       const output = config.output
-      shell.mkdir('-p', output.path)
-      shell.cd(output.path)
-      shell.touch(output.filename) // create a empty file first
+
       shell.cd(cwd)
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
+
+      shell.echo('Build ssr files firstly for server...')
+      shell.exec(`npx nautil-cli build ssr --env=${env}`)
+
+      const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
+      if (exists(clientConfigFile)) {
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client webpack --config=${JSON.stringify(clientConfigFile)} --watch`, { async: true })
+      }
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
+
+      // server up
       shell.cd(output.path)
       shell.exec('nodemon ' + output.filename)
-      return
-    }
-    else if (target === 'ssr-client') {
-      shell.cd(cwd)
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack --config=${JSON.stringify(configFile)} --watch`)
       return
     }
 
@@ -206,8 +217,8 @@ commander
       return
     }
 
-    const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${target} webpack-dev-server --config=${JSON.stringify(configFile)}`
-    if (target === 'native') {
+    const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} webpack-dev-server --config=${JSON.stringify(configFile)}`
+    if (runtime === 'native') {
       shell.echo('===============================\n\n')
       shell.echo('Make sure you have closed all Metro CLI!!')
       shell.echo('\n\n===============================')
@@ -216,7 +227,7 @@ commander
       shell.cd(path.resolve(cwd, 'react-native'))
       shell.exec(`react-native run-${platform}`)
     }
-    else if (target === 'wx-mp') {
+    else if (runtime === 'wx-mp') {
       shell.cd(cwd)
       // files/dirs should exist before serve up
       shell.exec(`npx nautil-cli build wx-mp --env=${env}`)
