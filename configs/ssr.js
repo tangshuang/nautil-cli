@@ -2,7 +2,7 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
-const FilterFilesPlugin = require('../filter-files-plugin')
+const FilterFilesPlugin = require('../filter-files-webpack-plugin')
 
 const basicConfig = require('./basic.config')
 const babelLoaderConfig = require('./babel-loader.config')
