@@ -7,6 +7,7 @@ const { HotModuleReplacementPlugin } = require('webpack')
 const basicConfig = require('./basic.config')
 const babelLoaderConfig = require('./babel-loader.config')
 const cssLoaderConfig = require('./css-loader.config')
+const ModuleModifyPlugin = require('../module-modify-webpack-plugin')
 
 const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/dom')
@@ -122,23 +123,49 @@ const customConfig = {
 // hot reload
 if (process.env.NODE_ENV === 'development' && process.env.HOT_RELOAD) {
   entry.unshift('react-hot-loader/patch')
-  entry.push(path.resolve(__dirname, '../polyfill/hot-entry.js'))
   plugins.push(new HotModuleReplacementPlugin())
   customConfig.devServer = {
     hot: true,
-    inline: false,
     liveReload: false,
   }
   cssLoaders.unshift('style-loader')
+  lessLoaders.unshift('style-loader')
   babelLoaderConfig.options.plugins.push('react-hot-loader/babel')
+
+  const hotCode = [
+    '\n',
+    'if (module.hot) {',
+    '  module.hot.accept()',
+    '}',
+  ].join('\n')
+  plugins.push(
+    new ModuleModifyPlugin(
+      (request) => {
+        if (!request) {
+          return false
+        }
+        if (request.indexOf(srcDir) !== 0) {
+          return false
+        }
+        if (entry.indexOf(request) === -1) {
+          return false
+        }
+        return true
+      },
+      content => content + hotCode
+    )
+  )
 }
 // not hot reload
 else {
   cssLoaders.unshift(MiniCssExtractPlugin.loader)
-  plugins.push(new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
-    chunkFilename: '[id].[hash].css',
-  }))
+  lessLoaders.unshift(MiniCssExtractPlugin.loader)
+  plugins.push(
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css',
+    })
+  )
 }
 
 const config = merge(basicConfig, customConfig)

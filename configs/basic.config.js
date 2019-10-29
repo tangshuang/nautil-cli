@@ -48,7 +48,7 @@ module.exports = {
     usedExports: true,
     sideEffects: true,
   },
-  devtool: env === 'production' ? undefined : 'source-map',
+  devtool: env === 'production' ? undefined : 'eval',
   devServer: {
     compress: true,
     port: 9000,
