@@ -11,11 +11,10 @@ const env = process.env.NODE_ENV
 const rootDir = process.cwd()
 
 const { exists } = require('../utils/file')
-const { escape } = require('../utils/regexp')
 const customDevServerConfigFile = path.resolve(rootDir, '.nautil/dev-server.config.js')
 const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
 
-// 加载环境变量
+// load .env params
 dotenv.config()
 const define_mapping = {}
 const define_keys = Object.keys(process.env)
@@ -25,9 +24,6 @@ define_keys.forEach((key) => {
 
 module.exports = {
   mode: env === 'production' ? 'production' : 'none',
-  output: {
-    // globalObject: `typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : this`,
-  },
   resolve: {
     alias: {
       'ts-fns': 'ts-fns/src/index.js',

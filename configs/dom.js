@@ -2,6 +2,7 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const HtmlPlugin = require('html-webpack-plugin')
+const { HotModuleReplacementPlugin } = require('webpack')
 
 const basicConfig = require('./basic.config')
 const babelLoaderConfig = require('./babel-loader.config')
@@ -40,7 +41,6 @@ const jsLoaders = [
   babelLoaderConfig,
 ]
 const cssLoaders = [
-  MiniCssExtractPlugin.loader,
   cssLoaderConfig,
 ]
 const lessLoaders = [
@@ -48,9 +48,19 @@ const lessLoaders = [
   'less-loader',
 ]
 
+const entry = [
+  path.resolve(srcDir, 'index.js'),
+]
+const plugins = [
+  new HtmlPlugin({
+    template: path.resolve(srcDir, 'index.html'),
+    filename: path.resolve(distDir, 'index.html'),
+  }),
+]
+
 const customConfig = {
   target: 'web',
-  entry: path.resolve(srcDir, 'index.js'),
+  entry,
   output: {
     path: distDir,
     filename: '[name].[hash].js',
@@ -73,16 +83,7 @@ const customConfig = {
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css',
-    }),
-    new HtmlPlugin({
-      template: path.resolve(srcDir, 'index.html'),
-      filename: path.resolve(distDir, 'index.html'),
-    }),
-  ],
+  plugins,
   optimization: {
     splitChunks: {
       chunks: 'all',
@@ -116,6 +117,28 @@ const customConfig = {
       },
     },
   },
+}
+
+// hot reload
+if (process.env.NODE_ENV === 'development' && process.env.HOT_RELOAD) {
+  entry.unshift('react-hot-loader/patch')
+  entry.push(path.resolve(__dirname, '../polyfill/hot-entry.js'))
+  plugins.push(new HotModuleReplacementPlugin())
+  customConfig.devServer = {
+    hot: true,
+    inline: false,
+    liveReload: false,
+  }
+  cssLoaders.unshift('style-loader')
+  babelLoaderConfig.options.plugins.push('react-hot-loader/babel')
+}
+// not hot reload
+else {
+  cssLoaders.unshift(MiniCssExtractPlugin.loader)
+  plugins.push(new MiniCssExtractPlugin({
+    filename: '[name].[hash].css',
+    chunkFilename: '[id].[hash].css',
+  }))
 }
 
 const config = merge(basicConfig, customConfig)

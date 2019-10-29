@@ -71,3 +71,13 @@ And there are two other files in that dir: dev-server.config.js and mp.config.js
 - mp.config.js: custom wechat miniprogram configuration
 
 That's how nautil-cli works.
+
+## .env
+
+You can put a `.env` file in your project root dir to control build.
+
+```
+## whether to use hot-reload module,
+## only works when NODE_ENV=development && RUNTIME_ENV=dom
+HOT_RELOAD=false
+```
