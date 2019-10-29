@@ -8,6 +8,5 @@ module.exports = {
       hashPrefix: 'hash',
     },
     localsConvention: 'camelCaseOnly',
-    sourceMap: env === 'production' ? false : true,
   },
 }
