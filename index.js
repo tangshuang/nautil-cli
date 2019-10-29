@@ -76,7 +76,7 @@ commander
     const appname = camelCase(name, { pascalCase: true })
 
     shell.cd(cwd)
-    shell.exec(`react-native init ${appname}`)
+    shell.exec(`npx react-native init ${appname}`)
     shell.mv(appname, 'react-native')
 
     const indexfile = path.resolve(cwd, 'src/native/index.js')
@@ -153,7 +153,7 @@ commander
 
       shell.mkdir('-p', assetsDir)
       shell.cd(path.resolve(cwd, 'react-native'))
-      shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
+      shell.exec(`npx react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
     else if (runtime === 'ssr') {
       // client build should be after server side build,
@@ -225,7 +225,7 @@ commander
       shell.cd(cwd)
       shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
-      shell.exec(`react-native run-${platform}`)
+      shell.exec(`npx react-native run-${platform}`)
     }
     else if (runtime === 'wx-mp') {
       shell.cd(cwd)
