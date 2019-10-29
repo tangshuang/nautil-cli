@@ -45,14 +45,7 @@ const cssLoaders = [
   cssLoaderConfig,
 ]
 const lessLoaders = [
-  {
-    ...cssLoaderConfig,
-    // only works for less-loader
-    options: {
-      ...cssLoaderConfig.options,
-      sourceMap: true,
-    },
-  },
+  ...cssLoaders,
   {
     loader: 'less-loader',
     options: {
