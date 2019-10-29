@@ -45,8 +45,20 @@ const cssLoaders = [
   cssLoaderConfig,
 ]
 const lessLoaders = [
-  ...cssLoaders,
-  'less-loader',
+  {
+    ...cssLoaderConfig,
+    // only works for less-loader
+    options: {
+      ...cssLoaderConfig.options,
+      sourceMap: true,
+    },
+  },
+  {
+    loader: 'less-loader',
+    options: {
+      sourceMap: true,
+    },
+  },
 ]
 
 const entry = [
