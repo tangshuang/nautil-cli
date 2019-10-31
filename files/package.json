@@ -10,7 +10,8 @@
     "dev:webc": "nautil-cli dev web-component",
     "dev:wx-mp": "nautil-cli dev wx-mp",
     "dev:native": "nautil-cli dev native",
-    "dev:ssr": "nautil-cli dev ssr"
+    "dev:ssr": "nautil-cli dev ssr",
+    "dev": "npm run dev:dom"
   },
   "dependencies": {},
   "devDependencies": {}
