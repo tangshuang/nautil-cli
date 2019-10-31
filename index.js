@@ -47,11 +47,11 @@ commander
     shell.mv('env', '.env')
     shell.mv('gitignore', '.gitignore')
 
-    const debug = options.verbose ? ' --verbose' : ''
+    const verbose = options.verbose ? ' --verbose' : ''
 
     shell.exec('git init')
-    shell.exec('npm i nautil' + debug)
-    shell.exec('npm i -D nautil-cli' + debug)
+    shell.exec('npm i nautil' + verbose)
+    shell.exec('npm i -D nautil-cli' + verbose)
 
     // generate react-native files
     if (options.native) {
@@ -63,7 +63,8 @@ commander
 
 commander
   .command('init-native')
-  .action(function() {
+  .option('--verbose [verbose]', 'show debug logs')
+  .action(function(options) {
     if (exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native has been generated. Remove `react-native` dir first.')
       shell.exit(1)
@@ -75,18 +76,23 @@ commander
     const dirname = path.basename(cwd)
     const { name = dirname } = json
     const appname = camelCase(name, { pascalCase: true })
+    const verbose = options.verbose ? ' --verbose' : ''
 
     shell.cd(cwd)
     shell.exec(`npx react-native init ${appname}`)
     shell.mv(appname, 'react-native')
 
-    const indexfile = path.resolve(cwd, 'src/native/index.js')
-    const indexcontent = read(indexfile)
-    const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
-    write(indexfile, indexnewcontent)
-
+    // install @react-native-community packages
     shell.cd(path.resolve(cwd, 'react-native'))
-    shell.exec(`npx react-native link @react-native-community/async-storage`)
+    const { dependencies } = require('nautil/package.json')
+    const pkgs = Object.keys(dependencies)
+    const deps = pkgs.filter(item => item.indexOf('@react-native-community') > -1)
+    shell.exec(`npm i ` + deps.join(' ') + verbose)
+
+    // install cocoda dependencies
+    if (process.platform === 'darwin') {
+      shell.exec(`cd ios && pod install`)
+    }
 
     shell.exit(0)
   })

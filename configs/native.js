@@ -66,10 +66,18 @@ const customConfig = {
     inline: false,
     liveReload: false,
   },
-  externals: {
-    'react-native': true,
-    'react': true,
-  },
+  externals: [
+    {
+      'react-native': true,
+      'react': true,
+    },
+    (context, request, callback) => {
+      if (request.indexOf('@react-native-community') > -1) {
+        return callback(null, 'commonjs2 ' + request)
+      }
+      callback()
+    },
+  ],
 }
 
 const config = merge(basicConfig, customConfig)

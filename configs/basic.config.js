@@ -1,6 +1,7 @@
 const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
 const path = require('path')
 const ModuleReplacePlugin = require('../module-replace-webpack-plugin')
+const camelCase = require('camelcase')
 
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -8,10 +9,10 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const dotenv = require('dotenv')
 
 const env = process.env.NODE_ENV
-const rootDir = process.cwd()
+const cwd = process.cwd()
 
 const { exists } = require('../utils/file')
-const customDevServerConfigFile = path.resolve(rootDir, '.nautil/dev-server.config.js')
+const customDevServerConfigFile = path.resolve(cwd, '.nautil/dev-server.config.js')
 const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
 
 // load .env params
@@ -21,6 +22,13 @@ const define_keys = Object.keys(process.env)
 define_keys.forEach((key) => {
   define_mapping['process.env.' + key] = JSON.stringify(process.env[key])
 })
+// set react-native APP_NAME
+const nativePkgFile = path.resolve(cwd, 'react-native/package.json')
+if (exists(nativePkgFile)) {
+  const pkg = require(nativePkgFile)
+  const { name } = pkg
+  define_mapping['process.env.APP_NAME'] = JSON.stringify(name)
+}
 
 module.exports = {
   mode: env === 'production' ? 'production' : 'none',
@@ -34,7 +42,7 @@ module.exports = {
       'asw': 'asw/src/index.js',
     },
     modules: [
-      path.resolve(rootDir, 'node_modules'),
+      path.resolve(cwd, 'node_modules'),
     ],
   },
   optimization: {
@@ -59,7 +67,7 @@ module.exports = {
     new DefinePlugin(define_mapping),
     new HashedModuleIdsPlugin(),
     new ModuleReplacePlugin(
-      source => source.indexOf(path.resolve(rootDir, 'node_modules/nautil/lib/components')) === 0,
+      source => source.indexOf(path.resolve(cwd, 'node_modules/nautil/lib/components')) === 0,
       source => process.env.RUNTIME_ENV === 'native'
         ? source.replace('nautil/lib/components', 'nautil/lib/native-components')
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')

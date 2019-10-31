@@ -8,4 +8,4 @@ function NativeApp() {
   </SafeAreaView>
 }
 
-register('@@APP_NAME@@', NativeApp)
+register(process.env.APP_NAME, NativeApp)
