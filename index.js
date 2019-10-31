@@ -72,17 +72,21 @@ commander
 
     const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
-    const { name } = json
+    const dirname = path.basename(cwd)
+    const { name = dirname } = json
     const appname = camelCase(name, { pascalCase: true })
 
     shell.cd(cwd)
-    shell.exec(`react-native init ${appname}`)
+    shell.exec(`npx react-native init ${appname}`)
     shell.mv(appname, 'react-native')
 
     const indexfile = path.resolve(cwd, 'src/native/index.js')
     const indexcontent = read(indexfile)
     const indexnewcontent = indexcontent.replace('@@APP_NAME@@', appname)
     write(indexfile, indexnewcontent)
+
+    shell.cd(path.resolve(cwd, 'react-native'))
+    shell.exec(`npx react-native link @react-native-community/async-storage`)
 
     shell.exit(0)
   })
@@ -153,7 +157,7 @@ commander
 
       shell.mkdir('-p', assetsDir)
       shell.cd(path.resolve(cwd, 'react-native'))
-      shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
+      shell.exec(`npx react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
     else if (runtime === 'ssr') {
       // client build should be after server side build,
@@ -225,7 +229,7 @@ commander
       shell.cd(cwd)
       shell.exec(cmd, { async: true })
       shell.cd(path.resolve(cwd, 'react-native'))
-      shell.exec(`react-native run-${platform}`)
+      shell.exec(`npx react-native run-${platform}`)
     }
     else if (runtime === 'wx-mp') {
       shell.cd(cwd)

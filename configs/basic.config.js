@@ -48,7 +48,7 @@ module.exports = {
     usedExports: true,
     sideEffects: true,
   },
-  devtool: env === 'production' ? undefined : process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map',
+  devtool: env === 'production' ? undefined : process.env.RUNTIME_ENV === 'dom' && process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map',
   devServer: {
     compress: true,
     port: 9000,
