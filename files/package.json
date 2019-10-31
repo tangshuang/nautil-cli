@@ -3,12 +3,12 @@
   "scripts": {
     "build:dom": "nautil-cli build dom",
     "build:webc": "nautil-cli build web-component",
-    "build:wx-mp": "nautil-cli build wx-mp",
+    "build:wemp": "nautil-cli build wemp",
     "build:native": "nautil-cli build native",
     "build:ssr": "nautil-cli build ssr",
     "dev:dom": "nautil-cli dev dom",
     "dev:webc": "nautil-cli dev web-component",
-    "dev:wx-mp": "nautil-cli dev wx-mp",
+    "dev:wemp": "nautil-cli dev wemp",
     "dev:native": "nautil-cli dev native",
     "dev:ssr": "nautil-cli dev ssr",
     "dev": "npm run dev:dom"

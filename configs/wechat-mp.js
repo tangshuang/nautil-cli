@@ -6,13 +6,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
 const basicConfig = require('./basic.config')
-const mpConfig = require('./wx-mp.config')
+const mpConfig = require('./wechat-mp.config')
 const babelLoaderConfig = require('./babel-loader.config')
 const cssLoaderConfig = require('./css-loader.config')
 
 const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/wx-mp')
-const distDir = path.resolve(rootDir, 'dist/wx-mp')
+const srcDir = path.resolve(rootDir, 'src/wechat-mp')
+const distDir = path.resolve(rootDir, 'dist/wechat-mp')
 
 const jsLoaders = [
   babelLoaderConfig,
