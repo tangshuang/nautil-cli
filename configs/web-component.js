@@ -5,24 +5,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebComponentCssPlugin = require('../web-component-css-webpack-plugin')
 
 const basicConfig = require('./basic.config')
-const babelLoaderConfig = require('./babel-loader.config')
-const cssLoaderConfig = require('./css-loader.config')
+const { jsxLoader, babelConfig } = require('./rules/jsx')
+const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
+const { fileLoader, fileLoaderConfig } = require('./rules/file')
 
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/web-component')
-const distDir = path.resolve(rootDir, 'dist/web-component')
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/web-component')
+const distDir = path.resolve(cwd, 'dist/web-component')
 
-const jsLoaders = [
-  babelLoaderConfig,
-]
-const cssLoaders = [
-  MiniCssExtractPlugin.loader,
-  cssLoaderConfig,
-]
-const lessLoaders = [
-  ...cssLoaders,
-  'less-loader',
-]
+// all files should be convert to be base64
+fileLoaderConfig.limit = 1000000000
 
 const customConfig = {
   target: 'web',
@@ -34,19 +26,11 @@ const customConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
-        use: jsLoaders,
-      },
-      {
-        test: /\.css$/,
-        use: cssLoaders,
-      },
-      {
-        test: /\.less$/,
-        use: lessLoaders,
-      },
+      jsxLoader,
+      cssLoader,
+      lessLoader,
+      sassLoader,
+      fileLoader,
     ],
   },
   plugins: [

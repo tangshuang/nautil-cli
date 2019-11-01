@@ -5,24 +5,13 @@ const nodeExternals = require('webpack-node-externals')
 const FilterFilesPlugin = require('../filter-files-webpack-plugin')
 
 const basicConfig = require('./basic.config')
-const babelLoaderConfig = require('./babel-loader.config')
-const cssLoaderConfig = require('./css-loader.config')
+const { jsxLoader } = require('./rules/jsx')
+const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
+const { fileLoader } = require('./rules/file')
 
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/ssr')
-const distDir = path.resolve(rootDir, 'dist/ssr')
-
-const jsLoaders = [
-  babelLoaderConfig,
-]
-const cssLoaders = [
-  MiniCssExtractPlugin.loader,
-  cssLoaderConfig,
-]
-const lessLoaders = [
-  ...cssLoaders,
-  'less-loader',
-]
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/ssr')
+const distDir = path.resolve(cwd, 'dist/ssr')
 
 const externals = [
   nodeExternals({
@@ -49,19 +38,11 @@ const customConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
-        use: jsLoaders,
-      },
-      {
-        test: /\.css$/,
-        use: cssLoaders,
-      },
-      {
-        test: /\.less$/,
-        use: lessLoaders,
-      },
+      jsxLoader,
+      cssLoader,
+      lessLoader,
+      sassLoader,
+      fileLoader,
     ],
   },
   node: {

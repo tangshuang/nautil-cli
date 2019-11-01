@@ -5,26 +5,15 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
-const basicConfig = require('./basic.config')
 const mpConfig = require('./wechat-mp.config')
-const babelLoaderConfig = require('./babel-loader.config')
-const cssLoaderConfig = require('./css-loader.config')
+const basicConfig = require('./basic.config')
+const { jsxLoader } = require('./rules/jsx')
+const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
+const { fileLoader } = require('./rules/file')
 
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/wechat-mp')
-const distDir = path.resolve(rootDir, 'dist/wechat-mp')
-
-const jsLoaders = [
-  babelLoaderConfig,
-]
-const cssLoaders = [
-  MiniCssExtractPlugin.loader,
-  cssLoaderConfig,
-]
-const lessLoaders = [
-  ...cssLoaders,
-  'less-loader',
-]
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/wechat-mp')
+const distDir = path.resolve(cwd, 'dist/wechat-mp')
 
 const customConfig = {
   target: 'web', // 必需字段，不能修改
@@ -62,19 +51,11 @@ const customConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
-        use: jsLoaders,
-      },
-      {
-        test: /\.css$/,
-        use: cssLoaders,
-      },
-      {
-        test: /\.less$/,
-        use: lessLoaders,
-      },
+      jsxLoader,
+      cssLoader,
+      lessLoader,
+      sassLoader,
+      fileLoader,
     ],
   },
   plugins: [

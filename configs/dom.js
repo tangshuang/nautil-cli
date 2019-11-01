@@ -1,19 +1,23 @@
+const path = require('path')
+
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
 const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
-
-const basicConfig = require('./basic.config')
-const babelLoaderConfig = require('./babel-loader.config')
-const cssLoaderConfig = require('./css-loader.config')
 const ModuleModifyPlugin = require('../module-modify-webpack-plugin')
 
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/dom')
-const distDir = path.resolve(rootDir, 'dist/dom')
+const basicConfig = require('./basic.config')
+const { jsxLoader, babelConfig } = require('./rules/jsx')
+const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
+const { fileLoader } = require('./rules/file')
 
-function getPackageDependencies(name, dependencies = {}) {
+const env = process.env.NODE_ENV
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/dom')
+const distDir = path.resolve(cwd, 'dist/dom')
+
+// find out dependencies
+const getPackageDependencies = (name, dependencies = {}) => {
   try {
     const deps = require(name + '/package.json').dependencies
     if (!deps) {
@@ -34,25 +38,8 @@ function getPackageDependencies(name, dependencies = {}) {
   dependencies[name] = true
   return dependencies
 }
-
 const nautilDeps = getPackageDependencies('nautil')
 const reactDeps = getPackageDependencies('react')
-
-const jsLoaders = [
-  babelLoaderConfig,
-]
-const cssLoaders = [
-  cssLoaderConfig,
-]
-const lessLoaders = [
-  ...cssLoaders,
-  {
-    loader: 'less-loader',
-    options: {
-      sourceMap: true,
-    },
-  },
-]
 
 const entry = [
   path.resolve(srcDir, 'index.js'),
@@ -72,21 +59,16 @@ const customConfig = {
     filename: '[name].[hash].js',
     chunkFilename: '[id].[hash].js',
   },
+  resolve: {
+    extensions: ['.jsx', '.js'],
+  },
   module: {
     rules: [
-      {
-        test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
-        use: jsLoaders,
-      },
-      {
-        test: /\.css$/,
-        use: cssLoaders,
-      },
-      {
-        test: /\.less$/,
-        use: lessLoaders,
-      },
+      jsxLoader,
+      cssLoader,
+      lessLoader,
+      sassLoader,
+      fileLoader,
     ],
   },
   plugins,
@@ -126,16 +108,18 @@ const customConfig = {
 }
 
 // hot reload
-if (process.env.NODE_ENV === 'development' && process.env.HOT_RELOAD) {
+if (env === 'development' && process.env.HOT_RELOAD) {
+  babelConfig.plugins.push('react-hot-loader/babel')
   entry.unshift('react-hot-loader/patch')
   plugins.push(new HotModuleReplacementPlugin())
+  cssLoader.use.unshift('style-loader')
+  lessLoader.use.unshift('style-loader')
+  sassLoader.use.unshift('style-loader')
+
   customConfig.devServer = {
     hot: true,
     liveReload: false,
   }
-  cssLoaders.unshift('style-loader')
-  lessLoaders.unshift('style-loader')
-  babelLoaderConfig.options.plugins.push('react-hot-loader/babel')
 
   const hotCode = [
     '\n',
@@ -163,8 +147,9 @@ if (process.env.NODE_ENV === 'development' && process.env.HOT_RELOAD) {
 }
 // not hot reload
 else {
-  cssLoaders.unshift(MiniCssExtractPlugin.loader)
-  lessLoaders.unshift(MiniCssExtractPlugin.loader)
+  cssLoader.use.unshift(MiniCssExtractPlugin.loader)
+  lessLoader.use.unshift(MiniCssExtractPlugin.loader)
+  sassLoader.use.unshift(MiniCssExtractPlugin.loader)
   plugins.push(
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',

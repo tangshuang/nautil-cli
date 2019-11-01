@@ -1,12 +1,12 @@
 const merge = require('webpack-merge')
 const HtmlPlugin = require('html-webpack-plugin')
-
-const basicConfig = require('./dom')
 const path = require('path')
 
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/ssr')
-const distDir = path.resolve(rootDir, 'dist/ssr')
+const basicConfig = require('./dom')
+
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/ssr')
+const distDir = path.resolve(cwd, 'dist/ssr')
 
 const mergedConfig = merge(basicConfig, {
   entry: path.resolve(srcDir, 'client.js'),

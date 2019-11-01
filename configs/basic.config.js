@@ -1,19 +1,9 @@
 const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
 const path = require('path')
 const ModuleReplacePlugin = require('../module-replace-webpack-plugin')
-const camelCase = require('camelcase')
-
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-
 const dotenv = require('dotenv')
-
-const env = process.env.NODE_ENV
-const cwd = process.cwd()
-
-const { exists } = require('../utils/file')
-const customDevServerConfigFile = path.resolve(cwd, '.nautil/dev-server.config.js')
-const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
 
 // load .env params
 dotenv.config()
@@ -22,6 +12,15 @@ const define_keys = Object.keys(process.env)
 define_keys.forEach((key) => {
   define_mapping['process.env.' + key] = JSON.stringify(process.env[key])
 })
+
+const env = process.env.NODE_ENV
+const cwd = process.cwd()
+
+// load devServer config
+const { exists } = require('../utils/file')
+const customDevServerConfigFile = path.resolve(cwd, '.nautil/dev-server.config')
+const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
+
 // set react-native APP_NAME
 const nativePkgFile = path.resolve(cwd, 'react-native/package.json')
 if (exists(nativePkgFile)) {
@@ -32,6 +31,9 @@ if (exists(nativePkgFile)) {
 
 module.exports = {
   mode: env === 'production' ? 'production' : 'none',
+  output: {
+    publicPath: '/',
+  },
   resolve: {
     alias: {
       'ts-fns': 'ts-fns/src/index.js',

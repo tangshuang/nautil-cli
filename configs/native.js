@@ -1,21 +1,12 @@
 const path = require('path')
 const merge = require('webpack-merge')
 
-const env = process.env.NODE_ENV
 const basicConfig = require('./basic.config')
-const babelLoaderConfig = require('./babel-loader.config')
 
+const env = process.env.NODE_ENV
 const rootDir = process.cwd()
 const srcDir = path.resolve(rootDir, 'src/native')
 const distDir = path.resolve(rootDir, 'react-native')
-
-const cssLoaders = [
-  'react-native-css-loader',
-]
-const lessLoaders = [
-  ...cssLoaders,
-  'less-loader',
-]
 
 const customConfig = {
   target: 'web',
@@ -24,6 +15,9 @@ const customConfig = {
     path: distDir,
     filename: 'index.js',
     libraryTarget: 'commonjs2',
+  },
+  resolve: {
+    extensions: ['.native.jsx', '.native.js', '.jsx', '.js'],
   },
   module: {
     rules: [
@@ -52,11 +46,23 @@ const customConfig = {
       },
       {
         test: /\.css$/,
-        use: cssLoaders,
+        use: [
+          'react-native-css-loader',
+        ],
       },
       {
         test: /\.less$/,
-        use: lessLoaders,
+        use: [
+          'react-native-css-loader',
+          'less-loader',
+        ],
+      },
+      {
+        test: /\.sass$/,
+        use: [
+          'react-native-css-loader',
+          'sass-loader',
+        ],
       },
     ],
   },
