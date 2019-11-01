@@ -41,6 +41,13 @@ const getPackageDependencies = (name, dependencies = {}) => {
 const nautilDeps = getPackageDependencies('nautil')
 const reactDeps = getPackageDependencies('react')
 
+// unshiftLoader
+const unshiftCssLoader = (cssLoaderConfig, loader) => {
+  cssLoaderConfig.oneOf.forEach((item) => {
+    item.use.unshift(loader)
+  })
+}
+
 const entry = [
   path.resolve(srcDir, 'index.js'),
 ]
@@ -112,9 +119,9 @@ if (env === 'development' && process.env.HOT_RELOAD) {
   babelConfig.plugins.push('react-hot-loader/babel')
   entry.unshift('react-hot-loader/patch')
   plugins.push(new HotModuleReplacementPlugin())
-  cssLoader.use.unshift('style-loader')
-  lessLoader.use.unshift('style-loader')
-  sassLoader.use.unshift('style-loader')
+  unshiftCssLoader(cssLoader, 'style-loader')
+  unshiftCssLoader(lessLoader, 'style-loader')
+  unshiftCssLoader(sassLoader, 'style-loader')
 
   customConfig.devServer = {
     hot: true,
@@ -147,9 +154,9 @@ if (env === 'development' && process.env.HOT_RELOAD) {
 }
 // not hot reload
 else {
-  cssLoader.use.unshift(MiniCssExtractPlugin.loader)
-  lessLoader.use.unshift(MiniCssExtractPlugin.loader)
-  sassLoader.use.unshift(MiniCssExtractPlugin.loader)
+  unshiftCssLoader(cssLoader, MiniCssExtractPlugin.loader)
+  unshiftCssLoader(lessLoader, MiniCssExtractPlugin.loader)
+  unshiftCssLoader(sassLoader, MiniCssExtractPlugin.loader)
   plugins.push(
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',

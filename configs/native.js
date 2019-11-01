@@ -2,6 +2,7 @@ const path = require('path')
 const merge = require('webpack-merge')
 
 const basicConfig = require('./basic.config')
+const { babelConfig } = require('./rules/jsx')
 
 const env = process.env.NODE_ENV
 const rootDir = process.cwd()
@@ -23,7 +24,7 @@ const customConfig = {
     rules: [
       {
         test: /\.(jsx|js)$/,
-        include: babelLoaderConfig.options.include,
+        include: babelConfig.include,
         use: [
           {
             loader: 'babel-loader',

@@ -170,6 +170,7 @@ commander
       // or the dist dir will be remove
       const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
       if (exists(clientConfigFile)) {
+        shell.echo('building ssr-client ...')
         shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client webpack --config=${JSON.stringify(clientConfigFile)}`)
       }
     }

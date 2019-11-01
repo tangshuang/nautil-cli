@@ -41,7 +41,10 @@ const jsxLoader = {
   test: /\.(jsx|js)$/,
   include: includeFiles,
   use: [
-    babelConfig,
+    {
+      loader: 'babel-loader',
+      options: babelConfig,
+    },
   ],
 }
 
