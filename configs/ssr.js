@@ -2,7 +2,7 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
-const FilterFilesPlugin = require('../filter-files-webpack-plugin')
+const FilesFilterPlugin = require('../plugins/files-filter-webpack-plugin')
 
 const basicConfig = require('./basic.config')
 const { jsxLoader } = require('./rules/jsx')
@@ -64,11 +64,10 @@ const customConfig = {
       filename: '[name].[hash].css',
       chunkFilename: '[id].[hash].css',
     }),
-    new FilterFilesPlugin({
-      match(file, options) {
-        const { output } = options
-        return file.indexOf(output.filename) !== 0
-      },
+    new FilesFilterPlugin(function(file) {
+      const { options } = this
+      const { output } = options
+      return file.indexOf(output.filename) !== 0
     }),
   ],
   externals,

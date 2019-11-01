@@ -140,8 +140,13 @@ commander
       shell.rm('-rf', distPath)
     }
 
+    let crossEnv = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} `
+    if (runtime === 'native') {
+      crossEnv += `PLATFORM_ENV=${platform} `
+    }
+
     shell.cd(cwd)
-    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} webpack --config=${JSON.stringify(configFile)}`)
+    shell.exec(`${crossEnv} webpack --config=${JSON.stringify(configFile)}`)
 
     if (!exists(distPath)) {
       console.error(`${distPath} is not existing.`)

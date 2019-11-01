@@ -4,7 +4,7 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
-const ModuleModifyPlugin = require('../module-modify-webpack-plugin')
+const ModuleModifyPlugin = require('../plugins/module-modify-webpack-plugin')
 
 const basicConfig = require('./basic.config')
 const { jsxLoader, babelConfig } = require('./rules/jsx')

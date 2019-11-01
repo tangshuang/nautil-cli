@@ -12,13 +12,13 @@ class ModuleReplacePlugin {
 
   apply(compiler) {
     const { find, replace } = this
-    compiler.hooks.normalModuleFactory.tap("ModuleReplacePlugin", (nmf) => {
-        nmf.hooks.beforeResolve.tap("ModuleReplacePlugin", (result) => {
+    compiler.hooks.normalModuleFactory.tap("ModuleReplacePlugin", (compilation) => {
+        compilation.hooks.beforeResolve.tap("ModuleReplacePlugin", (result) => {
           const { request, context } = result
           const source = path.resolve(context, request)
 
           let match = false
-          if (typeof find === 'function' && find(source, request)) {
+          if (typeof find === 'function' && find.call(compilation, source, request)) {
             match = true
           }
           else if (find instanceof RegExp && find.test(source)) {
@@ -33,7 +33,7 @@ class ModuleReplacePlugin {
           }
 
           if (typeof replace === 'function') {
-            result.request = replace(source, request)
+            result.request = replace.call(compilation, source, request)
           }
           else if (typeof replace === 'string') {
             result.request = replace
