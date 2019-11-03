@@ -66,9 +66,6 @@ const customConfig = {
     filename: '[name].[hash].js',
     chunkFilename: '[id].[hash].js',
   },
-  resolve: {
-    extensions: ['.jsx', '.js'],
-  },
   module: {
     rules: [
       jsxLoader,

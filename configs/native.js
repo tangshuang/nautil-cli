@@ -17,9 +17,6 @@ const customConfig = {
     filename: 'index.js',
     libraryTarget: 'commonjs2',
   },
-  resolve: {
-    extensions: ['.native.jsx', '.native.js', '.jsx', '.js'],
-  },
   module: {
     rules: [
       {

@@ -111,7 +111,7 @@ commander
 
     const {
       env = 'production',
-      platform = 'ios',
+      platform = runtime === 'native' ? 'ios' : 'dom',
       clean = env === 'production' ? true : false,
     } = options
     const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
@@ -185,6 +185,7 @@ commander
   .command('dev <runtime>')
   .option('-e, --env [env]', 'production|development')
   .option('-p, --platform [platform]', 'ios|andriod')
+  .option('-c, --clean [clean]', 'remove the output dir before build')
   .action(function(runtime, options) {
     if (runtime === 'native') {
       if (!exists(path.resolve(cwd, 'react-native'))) {
@@ -194,13 +195,35 @@ commander
       }
     }
 
-    const { env = 'development', platform = 'ios' } = options
+    const {
+      env = 'development',
+      platform = runtime === 'native' ? 'ios' : 'dom',
+      clean = env === 'production' ? true : false,
+    } = options
     const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
 
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
       shell.exit(1)
       return
+    }
+
+    // clear the dist files
+    if (clean) {
+      let distPath = config.output.path
+
+      // miniapp is build into sub common dir
+      if (runtime === 'wechat-mp') {
+        distPath = path.resolve(distPath, '..')
+      }
+      // todo: alipay-mp
+
+      if (runtime === 'native') {
+        const distFile = config.output.filename
+        distPath = path.resolve(distPath, distFile)
+      }
+
+      shell.rm('-rf', distPath)
     }
 
     // there is no devServer in ssr config,
