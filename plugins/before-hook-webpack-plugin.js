@@ -5,7 +5,7 @@ class BeforeHookPlugin {
   apply(compiler) {
     compiler.hooks.compilation.tap('BeforeHookPlugin', (compilation) => {
       compilation.hooks.buildModule.tap('BeforeHookPlugin', (module) => {
-        this.callback(module, compilation)
+        this.callback.call(compilation, module, compilation)
       })
     })
   }

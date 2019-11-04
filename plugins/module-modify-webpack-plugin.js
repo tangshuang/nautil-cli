@@ -12,7 +12,7 @@ class ModuleModifyPlugin {
         // filter
         const { resource } = module
         let match = false
-        if (typeof find === 'function' && find(resource, module)) {
+        if (typeof find === 'function' && find.call(compilation, resource, module)) {
           match = true
         }
         else if (find instanceof RegExp && find.test(resource)) {
@@ -26,14 +26,13 @@ class ModuleModifyPlugin {
           return
         }
 
-
         // modify
         const replaceBy = (source) => {
           const content = source.source()
 
           let replacement = content
           if (typeof replace === 'function') {
-            replacement = replace(content, source)
+            replacement = replace.call(compilation, content, source)
           }
           else if (typeof replace === 'string') {
             replacement = replace

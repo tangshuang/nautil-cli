@@ -1,6 +1,6 @@
 const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
 const path = require('path')
-const ModuleReplacePlugin = require('../module-replace-webpack-plugin')
+const ModuleReplacePlugin = require('../plugins/module-replace-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const dotenv = require('dotenv')
@@ -15,6 +15,8 @@ define_keys.forEach((key) => {
 
 const env = process.env.NODE_ENV
 const cwd = process.cwd()
+const runtime = process.env.RUNTIME_ENV
+const platform = process.env.PLATFORM_ENV
 
 // load devServer config
 const { exists } = require('../utils/file')
@@ -46,6 +48,12 @@ module.exports = {
     modules: [
       path.resolve(cwd, 'node_modules'),
     ],
+    extensions: [
+      '.' + platform + '.jsx',
+      '.' + platform + '.js',
+      '.jsx',
+      '.js',
+    ],
   },
   optimization: {
     minimizer: env === 'production' ? [
@@ -58,7 +66,7 @@ module.exports = {
     usedExports: true,
     sideEffects: true,
   },
-  devtool: env === 'production' ? undefined : process.env.RUNTIME_ENV === 'dom' && process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map',
+  devtool: env === 'production' ? undefined : runtime === 'dom' && process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map',
   devServer: {
     compress: true,
     port: 9000,
@@ -70,7 +78,7 @@ module.exports = {
     new HashedModuleIdsPlugin(),
     new ModuleReplacePlugin(
       source => source.indexOf(path.resolve(cwd, 'node_modules/nautil/lib/components')) === 0,
-      source => process.env.RUNTIME_ENV === 'native'
+      source => runtime === 'native'
         ? source.replace('nautil/lib/components', 'nautil/lib/native-components')
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
     ),

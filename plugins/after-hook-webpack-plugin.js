@@ -4,7 +4,7 @@ class AfterHookPlugin {
   }
   apply(compiler) {
     compiler.hooks.afterEmit.tap('AfterHookPlugin', (compilation) => {
-      this.callback(compilation.assets)
+      this.callback.call(compilation, compilation.assets)
     })
   }
 }

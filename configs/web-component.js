@@ -2,10 +2,10 @@ const merge = require('webpack-merge')
 const path = require('path')
 const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WebComponentCssPlugin = require('../web-component-css-webpack-plugin')
+const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
 
 const basicConfig = require('./basic.config')
-const { jsxLoader, babelConfig } = require('./rules/jsx')
+const { jsxLoader } = require('./rules/jsx')
 const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
 const { fileLoader, fileLoaderConfig } = require('./rules/file')
 
