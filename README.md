@@ -28,30 +28,23 @@ npx nautil-cli init some-app
 To build project to code into bundle files.
 
 ```
-nautil-cli build <runtime> [--platform=ios|andriod] [--env=development|production]
+nautil-cli build <target> [--runtime=dom] [--platform=ios] [--env=development]
 ```
 
-- runtime: dom|web-component|wechat-mp|native|ssr|ssr-client|any custom webpack config filename in `.natuil` dir
-- platform: only used for native
+- target: required, the filename in `.nautil` to use as webpack config file, i.e. `nautil-cli build doc --runtime=dom` will use `.nautil/doc.js` as config file
+- runtime: dom|web-component|wechat-mp|native|ssr|ssr-client, if not passed, use the value of *target* as default
+- platform: dom|ios|android, defualt is `dom`
 - env: for webpack mode option and process.env.NODE_ENV
 
-In the project root file, you can modify package.json file's `scripts` field to use `npm` command more easy.
-
-```
-npm run build-web
-```
+Notice: when you create a custom config file in .nautil dir, you should remember to pass `--runtime`.
 
 **dev**
 
 To set up a local server and preview code effects.
 
 ```
-nautil-cli dev <runtime> [--platform=ios|andriod] [--env=development|production]
+nautil-cli dev <target> [--runtime=dom] [--platform=ios|andriod] [--env=development|production]
 ```
-
-- runtime: web|web-component|wechat-mp|native|ssr custom webpack config filename in `.natuil` dir
-- platform: only used for native
-- env: for webpack mode option and process.env.NODE_ENV
 
 ## Configs
 
@@ -114,7 +107,7 @@ Modify the rules file to change default parsing.
 Replace the module patch string by using this webpack plugin.
 
 ```js
-const ModuleReplacePlugin = require('nautil-cli/plugins/module-replace-webpack-plugin')
+const { ModuleReplacePlugin } = require('nautil-cli/plugins')
 
 module.exports = {
   ...
@@ -135,7 +128,7 @@ module.exports = {
 Modify module file content.
 
 ```js
-const ModuleModifyPlugin = require('nautil-cli/plugins/module-modify-webpack-plugin')
+const { ModuleModifyPlugin } = require('nautil-cli/plugins')
 
 module.exports = {
   ...
@@ -158,7 +151,7 @@ Use it only with text files.
 Filter files of output, useful to output only wanted files.
 
 ```js
-const FilesFilterPlugin = require('nautil-cli/plugins/files-filter-webpack-plugin')
+const { FilesFilterPlugin } = require('nautil-cli/plugins')
 
 module.exports = {
   ...

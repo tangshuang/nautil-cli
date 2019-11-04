@@ -5,7 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 
-const { exists, readJSON, writeJSON, read, write, scandir } = require('./utils/file')
+const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -98,22 +98,25 @@ commander
   })
 
 commander
-  .command('build <runtime>')
+  .command('build <target>')
   .option('-e, --env [env]', 'production|development')
-  .option('-p, --platform [platform]', 'ios|andriod')
+  .option('-r, --runtime [runtime]', 'runtime environment of application dom|native|web-component|wechat-mp|ssr|ssr-client')
+  .option('-p, --platform [platform]', 'dom|ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
-  .action(function(runtime, options) {
+  .action(function(target, options) {
+    const {
+      env = 'production',
+      runtime = target,
+      platform = runtime === 'native' ? 'ios' : 'dom',
+      clean = env === 'production' ? true : false,
+    } = options
+
     if (runtime === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
       console.error('Native not generated. Run `npx nautil-cli init-native` first.')
       shell.exit(1)
       return
     }
 
-    const {
-      env = 'production',
-      platform = runtime === 'native' ? 'ios' : 'dom',
-      clean = env === 'production' ? true : false,
-    } = options
     const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
 
     if (!exists(configFile)) {
@@ -182,11 +185,19 @@ commander
   })
 
 commander
-  .command('dev <runtime>')
+  .command('dev <target>')
   .option('-e, --env [env]', 'production|development')
+  .option('-r, --runtime [runtime]', 'runtime environment of application dom|native|web-component|wechat-mp|ssr|ssr-client')
   .option('-p, --platform [platform]', 'ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
-  .action(function(runtime, options) {
+  .action(function(target, options) {
+    const {
+      env = 'development',
+      runtime = target,
+      platform = runtime === 'native' ? 'ios' : 'dom',
+      clean = env === 'production' ? true : false,
+    } = options
+
     if (runtime === 'native') {
       if (!exists(path.resolve(cwd, 'react-native'))) {
         console.error('Native not generated. Run `npx nautil-cli init-native` first.')
@@ -195,11 +206,6 @@ commander
       }
     }
 
-    const {
-      env = 'development',
-      platform = runtime === 'native' ? 'ios' : 'dom',
-      clean = env === 'production' ? true : false,
-    } = options
     const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
 
     if (!exists(configFile)) {
