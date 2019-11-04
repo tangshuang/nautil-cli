@@ -37,6 +37,6 @@ const config = {
 
 const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
 const hook = exists(hookFile) && require(hookFile)
-const hookConfig = hook ? hook(config) : config
+const hookConfig = typeof hook === 'function' ? hook(config) : config
 
 module.exports = hookConfig

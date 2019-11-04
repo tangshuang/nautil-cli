@@ -30,7 +30,7 @@ if (exists(nativePkgFile)) {
 
 const hookFile = path.resolve(cwd, '.nautil/before.hook.js')
 const hook = exists(hookFile) && require(hookFile)
-const hookConfig = hook ? hook() : {}
+const hookConfig = typeof hook === 'function' ? hook() : {}
 
 // basic config
 module.exports = merge(hookConfig, {
