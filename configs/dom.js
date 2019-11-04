@@ -113,7 +113,7 @@ const customConfig = {
 }
 
 // hot reload
-if (env === 'development' && process.env.HOT_RELOAD) {
+if (env === 'development' && !process.env.NO_HOT_RELOAD) {
   babelConfig.plugins.push('react-hot-loader/babel')
   entry.unshift('react-hot-loader/patch')
   plugins.push(new HotModuleReplacementPlugin())

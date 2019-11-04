@@ -1,8 +1,8 @@
 WX_APP_ID=xxx
 APP_BASE_URL=http://localhost:9000
 
-# whether to open hot reload when run development environment and preview in dom runtime environment
-# HOT_RELOAD=true
+# whether to disable hot reload when run development environment and preview in dom runtime environment
+# NO_HOT_RELOAD=true
 
 # whether to disable css module, default, nautil will use css module
 # NO_CSS_MODULE=true

@@ -77,9 +77,9 @@ That's how nautil-cli works.
 You can put a `.env` file in your project root dir to control build.
 
 ```
-## whether to use hot-reload module,
+## whether to disable hot-reload module,
 ## only works when NODE_ENV=development && RUNTIME_ENV=dom
-# HOT_RELOAD=true
+# NO_HOT_RELOAD=true
 
 ## whether to disable use css module
 ## nautil-cli default use css module
