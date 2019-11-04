@@ -76,7 +76,6 @@ module.exports = merge(hookConfig, {
     compress: true,
     port: 9000,
     historyApiFallback: true,
-    ...customDevServerConfig,
   },
   plugins: [
     new DefinePlugin(define_mapping),
