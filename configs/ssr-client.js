@@ -35,7 +35,7 @@ const config = {
   devServer: undefined,
 }
 
-const hookFile = path.resolve(cwd, '.nautil/after.hook')
+const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook(config) : config
 

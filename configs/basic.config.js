@@ -28,7 +28,7 @@ if (exists(nativePkgFile)) {
   define_mapping['process.env.APP_NAME'] = JSON.stringify(name)
 }
 
-const hookFile = path.resolve(cwd, '.nautil/before.hook')
+const hookFile = path.resolve(cwd, '.nautil/before.hook.js')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook() : {}
 
