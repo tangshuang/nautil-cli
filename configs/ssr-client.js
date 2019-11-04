@@ -34,4 +34,9 @@ const config = {
   devServer: undefined,
 }
 
-module.exports = config
+const { exists } = require('../utils/file')
+const hookFile = path.resolve(cwd, '.nautil/after.hook')
+const hook = exists(hookFile) && require(hookFile)
+const hookConfig = hook ? hook(config) : config
+
+module.exports = hookConfig

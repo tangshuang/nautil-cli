@@ -4,6 +4,7 @@ const ModuleReplacePlugin = require('../plugins/module-replace-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const dotenv = require('dotenv')
+const merge = require('webpack-merge')
 
 // load .env params
 dotenv.config()
@@ -18,11 +19,6 @@ const cwd = process.cwd()
 const runtime = process.env.RUNTIME_ENV
 const platform = process.env.PLATFORM_ENV
 
-// load devServer config
-const { exists } = require('../utils/file')
-const customDevServerConfigFile = path.resolve(cwd, '.nautil/dev-server.config')
-const customDevServerConfig = exists(customDevServerConfigFile) ? require(customDevServerConfigFile) : {}
-
 // set react-native APP_NAME
 const nativePkgFile = path.resolve(cwd, 'react-native/package.json')
 if (exists(nativePkgFile)) {
@@ -31,7 +27,13 @@ if (exists(nativePkgFile)) {
   define_mapping['process.env.APP_NAME'] = JSON.stringify(name)
 }
 
-module.exports = {
+const { exists } = require('../utils/file')
+const hookFile = path.resolve(cwd, '.nautil/before.hook')
+const hook = exists(hookFile) && require(hookFile)
+const hookConfig = hook ? hook() : {}
+
+// basic config
+module.exports = merge(hookConfig, {
   mode: env === 'production' ? 'production' : 'none',
   output: {
     publicPath: '/',
@@ -86,4 +88,4 @@ module.exports = {
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
     ),
   ],
-}
+})
