@@ -4,6 +4,7 @@ const path = require('path')
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
+const { exists } = require('../utils/file')
 
 const mpConfig = require('./wechat-mp.config')
 const basicConfig = require('./basic.config')
@@ -74,7 +75,6 @@ const customConfig = {
 
 const config = merge(basicConfig, customConfig)
 
-const { exists } = require('../utils/file')
 const hookFile = path.resolve(cwd, '.nautil/after.hook')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook(config) : config

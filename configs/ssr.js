@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const FilesFilterPlugin = require('../plugins/files-filter-webpack-plugin')
+const { exists } = require('../utils/file')
 
 const basicConfig = require('./basic.config')
 const { jsxLoader } = require('./rules/jsx')
@@ -75,7 +76,6 @@ const customConfig = {
 
 const config = merge(basicConfig, customConfig)
 
-const { exists } = require('../utils/file')
 const hookFile = path.resolve(cwd, '.nautil/after.hook')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook(config) : config

@@ -5,6 +5,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const dotenv = require('dotenv')
 const merge = require('webpack-merge')
+const { exists } = require('../utils/file')
 
 // load .env params
 dotenv.config()
@@ -27,7 +28,6 @@ if (exists(nativePkgFile)) {
   define_mapping['process.env.APP_NAME'] = JSON.stringify(name)
 }
 
-const { exists } = require('../utils/file')
 const hookFile = path.resolve(cwd, '.nautil/before.hook')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook() : {}

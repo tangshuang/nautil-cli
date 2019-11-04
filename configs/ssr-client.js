@@ -1,6 +1,7 @@
 const merge = require('webpack-merge')
 const HtmlPlugin = require('html-webpack-plugin')
 const path = require('path')
+const { exists } = require('../utils/file')
 
 const basicConfig = require('./dom')
 
@@ -34,7 +35,6 @@ const config = {
   devServer: undefined,
 }
 
-const { exists } = require('../utils/file')
 const hookFile = path.resolve(cwd, '.nautil/after.hook')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook(config) : config

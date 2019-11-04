@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
 const ModuleModifyPlugin = require('../plugins/module-modify-webpack-plugin')
+const { exists } = require('../utils/file')
 
 const basicConfig = require('./basic.config')
 const { jsxLoader, babelConfig } = require('./rules/jsx')
@@ -164,7 +165,6 @@ else {
 
 const config = merge(basicConfig, customConfig)
 
-const { exists } = require('../utils/file')
 const hookFile = path.resolve(cwd, '.nautil/after.hook')
 const hook = exists(hookFile) && require(hookFile)
 const hookConfig = hook ? hook(config) : config
