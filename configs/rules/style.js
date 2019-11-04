@@ -68,7 +68,7 @@ const cssLoader = {
       use: createStyleLoaders({ modules: true }),
     },
     {
-      resourceQuery: /no\-module/,
+      resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ modules: false }),
     },
     {
@@ -85,7 +85,7 @@ const lessLoader = {
       use: createStyleLoaders({ less: true, modules: true }),
     },
     {
-      resourceQuery: /no\-module/,
+      resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ less: true, modules: false }),
     },
     {
@@ -102,7 +102,7 @@ const sassLoader = {
       use: createStyleLoaders({ sass: true, modules: true }),
     },
     {
-      resourceQuery: /no\-module/,
+      resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ sass: true, modules: false }),
     },
     {
