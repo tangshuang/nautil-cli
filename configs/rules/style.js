@@ -64,12 +64,12 @@ const cssLoader = {
   test: /\.css$/,
   oneOf: [
     {
-      resourceQuery: /module/,
-      use: createStyleLoaders({ modules: true }),
-    },
-    {
       resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ modules: false }),
+    },
+    {
+      resourceQuery: /css\-module/,
+      use: createStyleLoaders({ modules: true }),
     },
     {
       use: createStyleLoaders(),
@@ -81,12 +81,12 @@ const lessLoader = {
   test: /\.less$/,
   oneOf: [
     {
-      resourceQuery: /module/,
-      use: createStyleLoaders({ less: true, modules: true }),
-    },
-    {
       resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ less: true, modules: false }),
+    },
+    {
+      resourceQuery: /css\-module/,
+      use: createStyleLoaders({ less: true, modules: true }),
     },
     {
       use: createStyleLoaders({ less: true }),
@@ -98,12 +98,12 @@ const sassLoader = {
   test: /\.sass$/,
   oneOf: [
     {
-      resourceQuery: /module/,
-      use: createStyleLoaders({ sass: true, modules: true }),
-    },
-    {
       resourceQuery: /no\-css\-module/,
       use: createStyleLoaders({ sass: true, modules: false }),
+    },
+    {
+      resourceQuery: /css\-module/,
+      use: createStyleLoaders({ sass: true, modules: true }),
     },
     {
       use: createStyleLoaders({ sass: true }),
