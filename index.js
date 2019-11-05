@@ -55,41 +55,49 @@ commander
 
     // generate react-native files
     if (options.native) {
-      shell.exec('npx nautil-cli init-native')
+      shell.exec('npx nautil-cli init-native ' + name)
     }
 
     shell.exit(0)
   })
 
 commander
-  .command('init-native')
+  .command('init-native [name]')
   .option('--verbose [verbose]', 'show debug logs')
-  .action(function(options) {
-    if (exists(path.resolve(cwd, 'react-native'))) {
-      console.error('Native has been generated. Remove `react-native` dir first.')
+  .action(function(name, options) {
+    if (!name) {
+      const pkgfile = path.resolve(cwd, 'package.json')
+      const json = readJSON(pkgfile)
+      name = json.name
+
+      if (!name) {
+        console.error('There is no `name` field in package.json')
+        shell.exit(1)
+        return
+      }
+    }
+
+    const AppName = camelCase(name, { pascalCase: true })
+
+    if (exists(path.resolve(cwd, AppName))) {
+      console.error(`Native has been generated. Remove ${AppName} dir first.`)
       shell.exit(1)
       return
     }
 
-    const pkgfile = path.resolve(cwd, 'package.json')
-    const json = readJSON(pkgfile)
-    const dirname = path.basename(cwd)
-    const { name = dirname } = json
-    const appname = camelCase(name, { pascalCase: true })
     const verbose = options.verbose ? ' --verbose' : ''
 
     shell.cd(cwd)
-    shell.exec(`npx react-native init ${appname}`)
-    shell.mv(appname, 'react-native')
+    shell.exec(`npx react-native init ${AppName}`)
 
     // install @react-native-community packages
-    shell.cd(path.resolve(cwd, 'react-native'))
+    shell.cd(path.resolve(cwd, AppName))
     const { dependencies } = require('nautil/package.json')
     const pkgs = Object.keys(dependencies)
-    const deps = pkgs.filter(item => item.indexOf('@react-native-community') > -1)
+    const deps = pkgs.filter(item => item.indexOf('@react-native-community') > 0)
     shell.exec(`npm i ` + deps.join(' ') + verbose)
 
-    // install cocoda dependencies
+    // install dependencies on macOS
     if (process.platform === 'darwin') {
       shell.exec(`cd ios && pod install`)
     }
@@ -100,7 +108,7 @@ commander
 commander
   .command('build <target>')
   .option('-e, --env [env]', 'production|development')
-  .option('-r, --runtime [runtime]', 'runtime environment of application dom|native|web-component|wechat-mp|ssr|ssr-client')
+  .option('-r, --runtime [runtime]', 'runtime environment of application, dom|native|web-component|wechat-mp|ssr|ssr-client')
   .option('-p, --platform [platform]', 'dom|ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
   .action(function(target, options) {
@@ -111,14 +119,7 @@ commander
       clean = env === 'production' ? true : false,
     } = options
 
-    if (runtime === 'native' && !exists(path.resolve(cwd, 'react-native'))) {
-      console.error('Native not generated. Run `npx nautil-cli init-native` first.')
-      shell.exit(1)
-      return
-    }
-
-    const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
-
+    const configFile = path.resolve(cwd, '.nautil', target + '.js')
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
       shell.exit(1)
@@ -128,28 +129,28 @@ commander
     const config = require(configFile)
     let distPath = config.output.path
 
+    if (runtime === 'native' && !exists(distPath)) {
+      const dirname = path.basename(distPath)
+      console.error('Native not generated. Run `npx nautil-cli init-native ' + dirname + '` first.')
+      if (!/^[a-zA-Z]+$/.test(dirname)) {
+        console.error('Notice: the output.path option in ' + configFile + ' dirname should be camel case.')
+      }
+      shell.exit(1)
+      return
+    }
+
     // miniapp is build into sub common dir
     if (runtime === 'wechat-mp') {
       distPath = path.resolve(distPath, '..')
     }
     // todo: alipay-mp
 
-    if (runtime === 'native') {
-      const distFile = config.output.filename
-      distPath = path.resolve(distPath, distFile)
-    }
-
-    if (clean) {
+    if (clean && runtime !== 'native') {
       shell.rm('-rf', distPath)
     }
 
-    let crossEnv = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} `
-    if (runtime === 'native') {
-      crossEnv += `PLATFORM_ENV=${platform} `
-    }
-
     shell.cd(cwd)
-    shell.exec(`${crossEnv} webpack --config=${JSON.stringify(configFile)}`)
+    shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} PLATFORM_ENV=${platform} webpack --config=${JSON.stringify(configFile)}`)
 
     if (!exists(distPath)) {
       console.error(`${distPath} is not existing.`)
@@ -166,11 +167,12 @@ commander
       shell.cp('-r', 'node_modules/miniprogram-render/src', 'miniprogram_npm/miniprogram-render')
     }
     else if (runtime === 'native') {
-      const assetsDir = JSON.stringify(path.resolve(cwd, 'dist/native/assets'))
-      const bundlePath = JSON.stringify(path.resolve(cwd, `dist/native/${platform}.bundle`))
-
+      const AppName = path.basename(distPath)
+      const assetsDir = JSON.stringify(path.resolve(cwd, `dist/${AppName}/assets`))
+      const bundlePath = JSON.stringify(path.resolve(cwd, `dist/${AppName}/${platform}.bundle`))
       shell.mkdir('-p', assetsDir)
-      shell.cd(path.resolve(cwd, 'react-native'))
+
+      shell.cd(distPath)
       shell.exec(`npx react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
     else if (runtime === 'ssr') {
@@ -179,7 +181,7 @@ commander
       const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
       if (exists(clientConfigFile)) {
         shell.echo('building ssr-client ...')
-        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client webpack --config=${JSON.stringify(clientConfigFile)}`)
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} webpack --config=${JSON.stringify(clientConfigFile)}`)
       }
     }
   })
@@ -198,36 +200,33 @@ commander
       clean = env === 'production' ? true : false,
     } = options
 
-    if (runtime === 'native') {
-      if (!exists(path.resolve(cwd, 'react-native'))) {
-        console.error('Native not generated. Run `npx nautil-cli init-native` first.')
-        shell.exit(1)
-        return
-      }
-    }
-
-    const configFile = path.resolve(cwd, '.nautil', runtime + '.js')
-
+    const configFile = path.resolve(cwd, '.nautil', target + '.js')
     if (!exists(configFile)) {
       console.error(`${configFile} is not existing.`)
       shell.exit(1)
       return
     }
 
-    // clear the dist files
-    if (clean) {
-      let distPath = config.output.path
+    const config = require(configFile)
+    let distPath = config.output.path
 
+    if (runtime === 'native' && !exists(distPath)) {
+      const dirname = path.basename(distPath)
+      console.error('Native not generated. Run `npx nautil-cli init-native ' + dirname + '` first.')
+      if (!/^[a-zA-Z]+$/.test(dirname)) {
+        console.error('Notice: the output.path option in ' + configFile + ' dirname should be camel case.')
+      }
+      shell.exit(1)
+      return
+    }
+
+    // clear the dist files
+    if (clean && runtime !== 'native') {
       // miniapp is build into sub common dir
       if (runtime === 'wechat-mp') {
         distPath = path.resolve(distPath, '..')
       }
       // todo: alipay-mp
-
-      if (runtime === 'native') {
-        const distFile = config.output.filename
-        distPath = path.resolve(distPath, distFile)
-      }
 
       shell.rm('-rf', distPath)
     }
@@ -235,19 +234,18 @@ commander
     // there is no devServer in ssr config,
     // so it should return before devServer checking
     if (runtime === 'ssr') {
-      const config = require(configFile)
       const output = config.output
 
       shell.cd(cwd)
 
-      shell.echo('Build ssr files firstly for server...')
-      shell.exec(`npx nautil-cli build ssr --env=${env}`)
+      shell.echo('Build ssr files before setup for server...')
+      shell.exec(`npx nautil-cli build ${target} --env=${env} --runtime=ssr`)
 
-      const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
+      const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
       if (exists(clientConfigFile)) {
-        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client webpack --config=${JSON.stringify(clientConfigFile)} --watch`, { async: true })
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} webpack --config=${JSON.stringify(clientConfigFile)} --watch`, { async: true })
       }
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
+      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr PLATFORM_ENV=${platform} webpack --config=${JSON.stringify(configFile)} --watch`, { async: true })
 
       // server up
       shell.cd(output.path)
@@ -255,27 +253,26 @@ commander
       return
     }
 
-    const config = require(configFile)
     if (!config.devServer) {
       console.error(`config.devServer is not existing in your config options.`)
       shell.exit(1)
       return
     }
 
-    const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} webpack-dev-server --config=${JSON.stringify(configFile)}`
+    const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} PLATFORM_ENV=${platform} webpack-dev-server --config=${JSON.stringify(configFile)}`
     if (runtime === 'native') {
       shell.echo('===============================\n\n')
       shell.echo('Make sure you have closed all Metro CLI!!')
       shell.echo('\n\n===============================')
       shell.cd(cwd)
       shell.exec(cmd, { async: true })
-      shell.cd(path.resolve(cwd, 'react-native'))
+      shell.cd(distPath)
       shell.exec(`npx react-native run-${platform}`)
     }
     else if (runtime === 'wechat-mp') {
       shell.cd(cwd)
       // files/dirs should exist before serve up
-      shell.exec(`npx nautil-cli build wechat-mp --env=${env}`)
+      shell.exec(`npx nautil-cli build ${target} --env=${env} --runtime=wechat-mp`)
       shell.exec(cmd)
     }
     else {
