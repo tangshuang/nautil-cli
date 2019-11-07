@@ -71,7 +71,8 @@ module.exports = merge(hookConfig, {
     usedExports: true,
     sideEffects: true,
   },
-  devtool: env === 'production' ? undefined : runtime === 'dom' && process.env.NO_HOT_RELOAD ? 'source-map' : '#eval-source-map',
+  // only in web and hot-reload open, we will use '#eval-source-map'
+  devtool: env === 'production' ? undefined : (runtime === 'dom' && !process.env.NO_HOT_RELOAD ? '#eval-source-map' : 'source-map'),
   devServer: {
     compress: true,
     port: 9000,

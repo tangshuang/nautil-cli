@@ -26,9 +26,9 @@ const basicMpConfig = {
   },
   // app 配置，同 https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#window
   app: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#ffffff',
     backgroundTextStyle: 'dark',
-    navigationBarBackgroundColor: 'transparent',
+    navigationBarBackgroundColor: '#ffffff',
     navigationBarTextStyle: 'black',
     navigationBarTitleText: 'Nautil Demo',
   },
