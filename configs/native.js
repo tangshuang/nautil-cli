@@ -1,14 +1,25 @@
 const path = require('path')
 const merge = require('webpack-merge')
-const { exists } = require('../utils/file')
+const { exists, readJSON } = require('../utils/file')
+const camelCase = require('camelcase')
 
 const basicConfig = require('./basic.config')
 const { babelConfig } = require('./rules/jsx')
 
+const pkgfile = path.resolve(cwd, 'package.json')
+const json = readJSON(pkgfile)
+
+if (!json.name) {
+  console.error('There is no `name` field in package.json')
+  process.exit(1)
+}
+
+const AppName = camelCase(json.name, { pascalCase: true })
+
 const env = process.env.NODE_ENV
-const rootDir = process.cwd()
-const srcDir = path.resolve(rootDir, 'src/native')
-const distDir = path.resolve(rootDir, 'react-native')
+const cwd = process.cwd()
+const srcDir = path.resolve(cwd, 'src/native')
+const distDir = path.resolve(cwd, AppName)
 
 const customConfig = {
   target: 'web',
