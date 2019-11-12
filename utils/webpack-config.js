@@ -9,6 +9,7 @@ function replaceHtmlConfig(config, options) {
       config.plugins[i] = new HtmlPlugin(options)
     }
   })
+  return config
 }
 
 module.exports = {
