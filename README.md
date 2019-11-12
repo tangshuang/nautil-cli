@@ -9,10 +9,10 @@ A CLI tool for [Nautil](https://github.com/tangshuang/nautil) app.
 To create a new project.
 
 ```
-nautil-cli init <project_name> [--native]
+nautil-cli init [app-name] [--native]
 ```
 
-- project_name: the project name of react-native
+- app-name: the project name of react-native
 - native: optional, whether to generate react-native dir
 
 Normally, you should first create an empty directory, and use `npx` to run it.
