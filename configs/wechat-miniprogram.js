@@ -4,21 +4,22 @@ const path = require('path')
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
-const { exists } = require('../utils/file')
 
-const mpConfig = require('./wechat-mp.config')
+const mpConfig = require('./wechat-miniprogram.config')
 const basicConfig = require('./basic.config')
 const { jsxLoader } = require('./rules/jsx')
 const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
 const { fileLoader } = require('./rules/file')
 
 const cwd = process.cwd()
-const srcDir = path.resolve(cwd, 'src/wechat-mp')
-const distDir = path.resolve(cwd, 'dist/wechat-mp')
+const srcDir = path.resolve(cwd, 'src/wechat-miniprogram')
+const distDir = path.resolve(cwd, 'dist/wechat-miniprogram')
 
 const customConfig = {
   target: 'web', // 必需字段，不能修改
-  entry: path.resolve(srcDir, 'index.js'),
+  entry: [
+    path.resolve(srcDir, 'index.js'),
+  ],
   output: {
     path: path.resolve(distDir, 'common'),
     filename: '[name].js',
@@ -75,8 +76,4 @@ const customConfig = {
 
 const config = merge(basicConfig, customConfig)
 
-const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
-const hook = exists(hookFile) && require(hookFile)
-const hookConfig = typeof hook === 'function' ? hook(config) : config
-
-module.exports = hookConfig
+module.exports = config

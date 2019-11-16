@@ -3,12 +3,13 @@ const path = require('path')
 const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
-const { exists } = require('../utils/file')
 
 const basicConfig = require('./basic.config')
+const { fileLoaderConfig } = require('./rules/file')
+const domConfig = require('./dom')
 const { jsxLoader } = require('./rules/jsx')
 const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
-const { fileLoader, fileLoaderConfig } = require('./rules/file')
+const { fileLoader } = require('./rules/file')
 
 const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/web-component')
@@ -19,7 +20,9 @@ fileLoaderConfig.limit = 1000000000
 
 const customConfig = {
   target: 'web',
-  entry: path.resolve(srcDir, 'index.js'),
+  entry: [
+    path.resolve(srcDir, 'index.js'),
+  ],
   output: {
     path: distDir,
     filename: '[name].[hash].js',
@@ -41,6 +44,9 @@ const customConfig = {
     }),
     new WebComponentCssPlugin(),
   ],
+
+  // notice: users of the web component should import all files
+  optimization: domConfig.optimization,
 }
 
 if (process.env.NODE_ENV !== 'production') {
@@ -52,8 +58,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 const config = merge(basicConfig, customConfig)
 
-const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
-const hook = exists(hookFile) && require(hookFile)
-const hookConfig = typeof hook === 'function' ? hook(config) : config
-
-module.exports = hookConfig
+module.exports = config

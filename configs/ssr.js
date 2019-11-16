@@ -3,7 +3,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const FilesFilterPlugin = require('../plugins/files-filter-webpack-plugin')
-const { exists } = require('../utils/file')
 
 const basicConfig = require('./basic.config')
 const { jsxLoader } = require('./rules/jsx')
@@ -25,14 +24,15 @@ const externals = [
       'ext',
       'i18next',
       'react-native',
-      /\@babel\/runtime\/helpers\/esm/,
     ],
   }),
 ]
 
 const customConfig = {
   target: 'node',
-  entry: path.resolve(srcDir, 'server.js'),
+  entry: [
+    path.resolve(srcDir, 'server.js'),
+  ],
   output: {
     path: distDir,
     filename: 'server.js',
@@ -76,8 +76,4 @@ const customConfig = {
 
 const config = merge(basicConfig, customConfig)
 
-const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
-const hook = exists(hookFile) && require(hookFile)
-const hookConfig = typeof hook === 'function' ? hook(config) : config
-
-module.exports = hookConfig
+module.exports = config

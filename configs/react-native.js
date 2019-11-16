@@ -1,29 +1,26 @@
 const path = require('path')
 const merge = require('webpack-merge')
-const { exists, readJSON } = require('../utils/file')
+const { readJSON } = require('../utils/file')
 const camelCase = require('camelcase')
 
 const basicConfig = require('./basic.config')
 const { babelConfig } = require('./rules/jsx')
 
+// use the project name as default react-native app name
 const pkgfile = path.resolve(cwd, 'package.json')
 const json = readJSON(pkgfile)
-
-if (!json.name) {
-  console.error('There is no `name` field in package.json')
-  process.exit(1)
-}
-
 const AppName = camelCase(json.name, { pascalCase: true })
 
 const env = process.env.NODE_ENV
 const cwd = process.cwd()
-const srcDir = path.resolve(cwd, 'src/native')
+const srcDir = path.resolve(cwd, 'src/react-native')
 const distDir = path.resolve(cwd, AppName)
 
 const customConfig = {
   target: 'web',
-  entry: path.resolve(srcDir, 'index.js'),
+  entry: [
+    path.resolve(srcDir, 'index.js'),
+  ],
   output: {
     path: distDir,
     filename: 'index.js',
@@ -98,8 +95,4 @@ const customConfig = {
 
 const config = merge(basicConfig, customConfig)
 
-const hookFile = path.resolve(cwd, '.nautil/after.hook.js')
-const hook = exists(hookFile) && require(hookFile)
-const hookConfig = typeof hook === 'function' ? hook(config) : config
-
-module.exports = hookConfig
+module.exports = config

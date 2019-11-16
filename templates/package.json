@@ -1,15 +1,16 @@
 {
+  "name": "nautil-app",
   "private": true,
   "scripts": {
     "build:dom": "nautil-cli build dom",
     "build:webc": "nautil-cli build web-component",
-    "build:wemp": "nautil-cli build wechat-mp",
-    "build:native": "nautil-cli build native",
+    "build:wemp": "nautil-cli build wechat-miniprogram",
+    "build:rn": "nautil-cli build react-native",
     "build:ssr": "nautil-cli build ssr",
     "dev:dom": "nautil-cli dev dom",
     "dev:webc": "nautil-cli dev web-component",
-    "dev:wemp": "nautil-cli dev wechat-mp",
-    "dev:native": "nautil-cli dev native",
+    "dev:wemp": "nautil-cli dev wechat-miniprogram",
+    "dev:rn": "nautil-cli dev react-native",
     "dev:ssr": "nautil-cli dev ssr",
     "dev": "npm run dev:dom"
   },

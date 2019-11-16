@@ -2,7 +2,7 @@
 const { exists } = require('../utils/file')
 const cwd = process.cwd()
 const path = require('path')
-const customMpConfigFile = path.resolve(cwd, '.nautil/wechat-mp.config.js')
+const customMpConfigFile = path.resolve(cwd, '.nautil/wechat-miniprogram.config.js')
 const customMpConfig = exists(customMpConfigFile) ? require(customMpConfigFile) : {}
 
 const basicMpConfig = {

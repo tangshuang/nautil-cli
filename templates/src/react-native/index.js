@@ -1,4 +1,4 @@
-import { register } from 'nautil/native'
+import { register } from 'nautil/react-native'
 import App from '../app/app.jsx'
 import { SafeAreaView } from 'react-native'
 
