@@ -66,8 +66,8 @@ module.exports = {
     new HashedModuleIdsPlugin(),
     new ModuleReplacePlugin(
       source => source.indexOf(path.resolve(cwd, 'node_modules/nautil/lib/components')) === 0,
-      source => runtime === 'native'
-        ? source.replace('nautil/lib/components', 'nautil/lib/native-components')
+      source => runtime === 'react-native'
+        ? source.replace('nautil/lib/components', 'nautil/lib/react-native-components')
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
     ),
   ],

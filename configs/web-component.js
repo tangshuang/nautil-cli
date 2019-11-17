@@ -1,22 +1,19 @@
 const merge = require('webpack-merge')
 const path = require('path')
-const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
+const { replaceHtmlConfig } = require('../utils/webpack-config')
 
-const basicConfig = require('./basic.config')
-const { fileLoaderConfig } = require('./rules/file')
-const domConfig = require('./dom')
-const { jsxLoader } = require('./rules/jsx')
-const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
-const { fileLoader } = require('./rules/file')
+const basicConfig = require('./shared/basic-config')
+const splitChunksConfig = require('./shared/split-chunks')
+
+const { fileLoaders, fileLoaderConfig } = require('./rules/file')
+const { jsxLoaders } = require('./rules/jsx')
+const { cssLoaders, lessLoaders, sassLoaders, unshiftStyesheetLoader } = require('./rules/style')
 
 const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/web-component')
 const distDir = path.resolve(cwd, 'dist/web-component')
-
-// all files should be convert to be base64
-fileLoaderConfig.limit = 1000000000
 
 const customConfig = {
   target: 'web',
@@ -30,11 +27,11 @@ const customConfig = {
   },
   module: {
     rules: [
-      jsxLoader,
-      cssLoader,
-      lessLoader,
-      sassLoader,
-      fileLoader,
+      jsxLoaders,
+      cssLoaders,
+      lessLoaders,
+      sassLoaders,
+      fileLoaders,
     ],
   },
   plugins: [
@@ -44,18 +41,24 @@ const customConfig = {
     }),
     new WebComponentCssPlugin(),
   ],
-
-  // notice: users of the web component should import all files
-  optimization: domConfig.optimization,
 }
 
 if (process.env.NODE_ENV !== 'production') {
-  customConfig.plugins.push(new HtmlPlugin({
-    template: path.resolve(srcDir, 'index.html'),
-    filename: path.resolve(distDir, 'index.html'),
-  }))
+  replaceHtmlConfig(customConfig, () => {
+    return {
+      template: path.resolve(srcDir, 'index.html'),
+      filename: path.resolve(distDir, 'index.html'),
+    }
+  })
 }
 
-const config = merge(basicConfig, customConfig)
+// all files should be convert to be base64
+fileLoaderConfig.limit = 1000000000
+// use extract css loader
+unshiftStyesheetLoader(cssLoaders, MiniCssExtractPlugin.loader)
+unshiftStyesheetLoader(lessLoaders, MiniCssExtractPlugin.loader)
+unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
+
+const config = merge(basicConfig, splitChunksConfig, customConfig)
 
 module.exports = config

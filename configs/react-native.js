@@ -3,8 +3,10 @@ const merge = require('webpack-merge')
 const { readJSON } = require('../utils/file')
 const camelCase = require('camelcase')
 
-const basicConfig = require('./basic.config')
+const basicConfig = require('./shared/basic-config')
+
 const { babelConfig } = require('./rules/jsx')
+const { fileLoaders, fileLoaderConfig } = require('./rules/file')
 
 // use the project name as default react-native app name
 const pkgfile = path.resolve(cwd, 'package.json')
@@ -71,6 +73,7 @@ const customConfig = {
           'sass-loader',
         ],
       },
+      fileLoaders,
     ],
   },
   devServer: {
@@ -92,6 +95,9 @@ const customConfig = {
     },
   ],
 }
+
+// all files should be convert to be base64
+fileLoaderConfig.limit = 1000000000
 
 const config = merge(basicConfig, customConfig)
 

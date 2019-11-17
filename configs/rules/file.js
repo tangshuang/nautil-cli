@@ -1,7 +1,7 @@
 const fileLoaderConfig = {
   limit: 8192, // in bytes
 }
-const fileLoader = {
+const fileLoaders = {
   test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
   use: [
     {
@@ -12,6 +12,6 @@ const fileLoader = {
 }
 
 module.exports = {
-  fileLoader,
+  fileLoaders,
   fileLoaderConfig,
 }

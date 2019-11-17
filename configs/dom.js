@@ -1,52 +1,21 @@
 const path = require('path')
-
 const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
 const ModuleModifyPlugin = require('../plugins/module-modify-webpack-plugin')
 
-const basicConfig = require('./basic.config')
-const { jsxLoader, babelConfig } = require('./rules/jsx')
-const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
-const { fileLoader } = require('./rules/file')
+const basicConfig = require('./shared/basic-config')
+const splitChunksConfig = require('./shared/split-chunks')
+
+const { jsxLoaders, babelConfig } = require('./rules/jsx')
+const { cssLoaders, lessLoaders, sassLoaders, unshiftStyesheetLoader } = require('./rules/style')
+const { fileLoaders } = require('./rules/file')
 
 const env = process.env.NODE_ENV
 const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/dom')
 const distDir = path.resolve(cwd, 'dist/dom')
-
-// find out dependencies
-const getPackageDependencies = (name, dependencies = {}) => {
-  try {
-    const deps = require(name + '/package.json').dependencies
-    if (!deps) {
-      return dependencies
-    }
-
-    const keys = Object.keys(deps)
-    keys.forEach((key) => {
-      if (dependencies[key]) {
-        return
-      }
-      dependencies[key] = true
-      getPackageDependencies(key, dependencies)
-    })
-  }
-  catch (e) {}
-
-  dependencies[name] = true
-  return dependencies
-}
-const nautilDeps = getPackageDependencies('nautil')
-const reactDeps = getPackageDependencies('react')
-
-// unshiftLoader
-const unshiftCssLoader = (cssLoaderConfig, loader) => {
-  cssLoaderConfig.oneOf.forEach((item) => {
-    item.use.unshift(loader)
-  })
-}
 
 const entry = [
   path.resolve(srcDir, 'index.js'),
@@ -68,57 +37,23 @@ const customConfig = {
   },
   module: {
     rules: [
-      jsxLoader,
-      cssLoader,
-      lessLoader,
-      sassLoader,
-      fileLoader,
+      jsxLoaders,
+      cssLoaders,
+      lessLoaders,
+      sassLoaders,
+      fileLoaders,
     ],
   },
   plugins,
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      maxInitialRequests: Infinity,
-      minSize: 0,
-      cacheGroups: {
-        vendors: {
-          test: /node_modules/,
-          name(module) {
-            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
-            const [pkg, ver] = packageName.split('@')
-            if (pkg.indexOf('react') === 0 || reactDeps[pkg] || pkg === 'scheduler') {
-              return `react-vendors`
-            }
-            else if (nautilDeps[pkg]) {
-              return `nautil-vendors`
-            }
-            else {
-              return `vendors`
-            }
-          },
-          filename: '[name].[hash].js',
-        },
-        commons: {
-          test(module) {
-            return !/node_modules/.test(module.context)
-          },
-          name: 'main',
-          filename: '[name].[hash].js',
-        },
-      },
-    },
-  },
 }
 
 // hot reload
 if (env === 'development' && !process.env.NO_HOT_RELOAD) {
   babelConfig.plugins.push('react-hot-loader/babel')
   entry.unshift('react-hot-loader/patch')
-  plugins.push(new HotModuleReplacementPlugin())
-  unshiftCssLoader(cssLoader, 'style-loader')
-  unshiftCssLoader(lessLoader, 'style-loader')
-  unshiftCssLoader(sassLoader, 'style-loader')
+  unshiftStyesheetLoader(cssLoaders, 'style-loader')
+  unshiftStyesheetLoader(lessLoaders, 'style-loader')
+  unshiftStyesheetLoader(sassLoaders, 'style-loader')
 
   customConfig.devServer = {
     hot: true,
@@ -131,6 +66,7 @@ if (env === 'development' && !process.env.NO_HOT_RELOAD) {
     '  module.hot.accept()',
     '}',
   ].join('\n')
+  plugins.push(new HotModuleReplacementPlugin())
   plugins.push(
     new ModuleModifyPlugin(
       (request) => {
@@ -151,9 +87,9 @@ if (env === 'development' && !process.env.NO_HOT_RELOAD) {
 }
 // not hot reload
 else {
-  unshiftCssLoader(cssLoader, MiniCssExtractPlugin.loader)
-  unshiftCssLoader(lessLoader, MiniCssExtractPlugin.loader)
-  unshiftCssLoader(sassLoader, MiniCssExtractPlugin.loader)
+  unshiftStyesheetLoader(cssLoaders, MiniCssExtractPlugin.loader)
+  unshiftStyesheetLoader(lessLoaders, MiniCssExtractPlugin.loader)
+  unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
   plugins.push(
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',
@@ -162,6 +98,6 @@ else {
   )
 }
 
-const config = merge(basicConfig, customConfig)
+const config = merge(basicConfig, splitChunksConfig, customConfig)
 
 module.exports = config

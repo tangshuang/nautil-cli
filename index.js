@@ -4,7 +4,6 @@ const commander = require('commander')
 const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
-const gulp = require('gulp')
 
 const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
 
@@ -35,8 +34,13 @@ commander
       console.error('We will use the dir name as project name: ' + appname)
     }
 
-    const files = path.resolve(__dirname, 'templates') + '/.'
-    shell.exec(`cp -r ${JSON.stringify(files)} ${JSON.stringify(cwd)}`)
+    const cp = (filename) => {
+      const files = path.resolve(__dirname, 'templates') + '/' + filename
+      shell.exec(`cp -r ${JSON.stringify(files)} ${JSON.stringify(cwd)}`)
+    }
+    cp('.')
+    cp('.env_sample')
+    cp('.gitignore')
 
     const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
@@ -48,6 +52,7 @@ commander
     shell.cd(cwd)
     shell.exec('git init')
     shell.exec('npm i nautil' + verbose)
+    shell.exec('npm i core-js@3' + verbose)
     shell.exec('npm i -D nautil-cli' + verbose)
 
     // generate react-native files

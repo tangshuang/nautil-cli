@@ -19,7 +19,7 @@ const postcssLoaderConfig = {
   sourceMap: true,
 }
 
-const createStyleLoaders = (options = {}) => {
+const createStylesheetLoaders = (options = {}) => {
   const { modules = !noCssModule, less, sass } = options
   const loaders = [
     {
@@ -60,61 +60,78 @@ const createStyleLoaders = (options = {}) => {
   return loaders
 }
 
-const cssLoader = {
+const cssLoaders = {
   test: /\.css$/,
   oneOf: [
     {
       resourceQuery: /no\-css\-module/,
-      use: createStyleLoaders({ modules: false }),
+      use: createStylesheetLoaders({ modules: false }),
     },
     {
       resourceQuery: /css\-module/,
-      use: createStyleLoaders({ modules: true }),
+      use: createStylesheetLoaders({ modules: true }),
     },
     {
-      use: createStyleLoaders(),
+      use: createStylesheetLoaders(),
     },
   ],
 }
 
-const lessLoader = {
+const lessLoaders = {
   test: /\.less$/,
   oneOf: [
     {
       resourceQuery: /no\-css\-module/,
-      use: createStyleLoaders({ less: true, modules: false }),
+      use: createStylesheetLoaders({ less: true, modules: false }),
     },
     {
       resourceQuery: /css\-module/,
-      use: createStyleLoaders({ less: true, modules: true }),
+      use: createStylesheetLoaders({ less: true, modules: true }),
     },
     {
-      use: createStyleLoaders({ less: true }),
+      use: createStylesheetLoaders({ less: true }),
     },
   ],
 }
 
-const sassLoader = {
+const sassLoaders = {
   test: /\.sass$/,
   oneOf: [
     {
       resourceQuery: /no\-css\-module/,
-      use: createStyleLoaders({ sass: true, modules: false }),
+      use: createStylesheetLoaders({ sass: true, modules: false }),
     },
     {
       resourceQuery: /css\-module/,
-      use: createStyleLoaders({ sass: true, modules: true }),
+      use: createStylesheetLoaders({ sass: true, modules: true }),
     },
     {
-      use: createStyleLoaders({ sass: true }),
+      use: createStylesheetLoaders({ sass: true }),
     },
   ],
 }
 
+// unshift css loader
+const unshiftStyesheetLoader = (config, loader) => {
+  config.oneOf.forEach((item) => {
+    item.use.unshift(loader)
+  })
+}
+
+// push css loader
+const pushStyesheetLoader = (config, loader) => {
+  config.oneOf.forEach((item) => {
+    item.use.push(loader)
+  })
+}
+
 module.exports = {
-  createStyleLoaders,
+  createStylesheetLoaders,
   cssLoaderModuleConfig,
-  cssLoader,
-  lessLoader,
-  sassLoader,
+  postcssLoaderConfig,
+  cssLoaders,
+  lessLoaders,
+  sassLoaders,
+  unshiftStyesheetLoader,
+  pushStyesheetLoader,
 }

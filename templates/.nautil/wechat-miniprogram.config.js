@@ -24,7 +24,7 @@ module.exports = {
   },
   // 项目配置，会被合并到 project.config.json
   projectConfig: {
-    appid: process.env.WX_APP_ID,
+    appid: process.env.WECHAT_MINIPROGRAM_APP_ID,
   },
   // 包配置，会被合并到 package.json
   packageConfig: {

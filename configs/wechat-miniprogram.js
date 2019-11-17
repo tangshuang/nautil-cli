@@ -5,11 +5,12 @@ const merge = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 webpack 插件
 
+const basicConfig = require('./shared/basic-config')
 const mpConfig = require('./wechat-miniprogram.config')
-const basicConfig = require('./basic.config')
-const { jsxLoader } = require('./rules/jsx')
-const { cssLoader, lessLoader, sassLoader } = require('./rules/style')
-const { fileLoader } = require('./rules/file')
+
+const { jsxLoaders } = require('./rules/jsx')
+const { cssLoaders, lessLoaders, sassLoaders, unshiftStyesheetLoader } = require('./rules/style')
+const { fileLoaders } = require('./rules/file')
 
 const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/wechat-miniprogram')
@@ -53,11 +54,11 @@ const customConfig = {
   },
   module: {
     rules: [
-      jsxLoader,
-      cssLoader,
-      lessLoader,
-      sassLoader,
-      fileLoader,
+      jsxLoaders,
+      cssLoaders,
+      lessLoaders,
+      sassLoaders,
+      fileLoaders,
     ],
   },
   plugins: [
@@ -73,6 +74,10 @@ const customConfig = {
     liveReload: false,
   },
 }
+
+unshiftStyesheetLoader(cssLoaders, MiniCssExtractPlugin.loader)
+unshiftStyesheetLoader(lessLoaders, MiniCssExtractPlugin.loader)
+unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
 
 const config = merge(basicConfig, customConfig)
 
