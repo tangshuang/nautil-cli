@@ -53,6 +53,7 @@ commander
     shell.exec('git init')
     shell.exec('npm i nautil' + verbose)
     shell.exec('npm i core-js@3' + verbose)
+    shell.exec('npm i regenerator-runtime')
     shell.exec('npm i -D nautil-cli' + verbose)
 
     // generate react-native files

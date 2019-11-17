@@ -1,6 +1,6 @@
 const { DefinePlugin, HashedModuleIdsPlugin } = require('webpack')
 const path = require('path')
-const ModuleReplacePlugin = require('../plugins/module-replace-webpack-plugin')
+const ModuleReplacePlugin = require('../../plugins/module-replace-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 

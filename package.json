@@ -23,9 +23,7 @@
     "cross-env": "^6.0.3",
     "css-loader": "^3.2.0",
     "dotenv": "^8.0.0",
-    "express": "^4.17.1",
     "file-loader": "^4.2.0",
-    "gulp": "^4.0.2",
     "html-webpack-plugin": "^3.2.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
@@ -48,5 +46,10 @@
     "webpack-merge": "^4.2.2",
     "webpack-node-externals": "^1.7.2",
     "webpack-sources": "^1.4.3"
+  },
+  "peerDependencies": {
+    "express": "^4.17.1",
+    "core-js": "^3.4.1",
+    "regenerator-runtime": "^0.13.3"
   }
 }

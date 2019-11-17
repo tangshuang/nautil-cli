@@ -1,6 +1,7 @@
 const merge = require('webpack-merge')
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlPlugin = require('html-webpack-plugin')
 const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
 const { replaceHtmlConfig } = require('../utils/webpack-config')
 
@@ -40,16 +41,11 @@ const customConfig = {
       chunkFilename: '[id].[hash].css',
     }),
     new WebComponentCssPlugin(),
-  ],
-}
-
-if (process.env.NODE_ENV !== 'production') {
-  replaceHtmlConfig(customConfig, () => {
-    return {
+    new HtmlPlugin({
       template: path.resolve(srcDir, 'index.html'),
       filename: path.resolve(distDir, 'index.html'),
-    }
-  })
+    }),
+  ],
 }
 
 // all files should be convert to be base64

@@ -8,7 +8,7 @@ const MpPlugin = require('mp-webpack-plugin') // 用于构建小程序代码的 
 const basicConfig = require('./shared/basic-config')
 const mpConfig = require('./wechat-miniprogram.config')
 
-const { jsxLoaders } = require('./rules/jsx')
+const { jsxLoaders, babelConfig } = require('./rules/jsx')
 const { cssLoaders, lessLoaders, sassLoaders, unshiftStyesheetLoader } = require('./rules/style')
 const { fileLoaders } = require('./rules/file')
 
@@ -16,9 +16,21 @@ const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/wechat-miniprogram')
 const distDir = path.resolve(cwd, 'dist/wechat-miniprogram')
 
+// do not support transform-runtime in wechat miniprogram
+// add regenerator-runtime in entry
+const babelPlugins = babelConfig.plugins
+const babelRuntime = '@babel/plugin-transform-runtime'
+babelPlugins.forEach((plugin, i) => {
+  const name = Array.isArray(plugin) ? plugin[0] : plugin
+  if (name === babelRuntime) {
+    babelPlugins.splice(i, 1)
+  }
+})
+
 const customConfig = {
   target: 'web', // 必需字段，不能修改
   entry: [
+    'regenerator-runtime/runtime',
     path.resolve(srcDir, 'index.js'),
   ],
   output: {
