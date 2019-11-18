@@ -1,4 +1,4 @@
 import { define } from 'nautil/web-component'
 import App from '../app/app.jsx'
 
-define(process.env.app_name, App)
+define('my-app', App)
