@@ -4,7 +4,6 @@ const commander = require('commander')
 const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
-
 const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
 
 const pkg = require('./package.json')

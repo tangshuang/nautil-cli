@@ -3,6 +3,8 @@ const path = require('path')
 const ModuleReplacePlugin = require('../../plugins/module-replace-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const { readJSON } = require('../../utils/file')
+const camelCase = require('camelcase')
 
 const cwd = process.cwd()
 const env = process.env.NODE_ENV
