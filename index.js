@@ -92,10 +92,13 @@ commander
 
     // install @react-native-community packages
     shell.cd(path.resolve(cwd, AppName))
-    const { dependencies } = require(path.resolve(cwd, 'node_modules/nautil/package.json'))
+    const { dependencies } = require('nautil/package.json')
     const pkgs = Object.keys(dependencies)
-    const deps = pkgs.filter(item => item.indexOf('@react-native-community') > 0)
-    shell.exec(`npm i ` + deps.join(' ') + verbose)
+    const deps = pkgs.filter(item => item.indexOf('@react-native-community/') === 0)
+    if (deps.length) {
+      shell.echo('Install @react-native-community dependencies...')
+      shell.exec(`npm i ` + deps.join(' ') + verbose)
+    }
 
     // install dependencies on macOS
     if (process.platform === 'darwin') {
@@ -180,7 +183,7 @@ commander
       // or the dist dir will be remove
       const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
       if (exists(clientConfigFile)) {
-        shell.echo('building ssr-client ...')
+        shell.echo('Building ssr-client ...')
         shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))}`)
       }
     }

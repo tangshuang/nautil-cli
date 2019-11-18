@@ -8,13 +8,14 @@ const basicConfig = require('./shared/basic-config')
 const { babelConfig } = require('./rules/jsx')
 const { fileLoaders, fileLoaderConfig } = require('./rules/file')
 
+const env = process.env.NODE_ENV
+const cwd = process.cwd()
+
 // use the project name as default react-native app name
 const pkgfile = path.resolve(cwd, 'package.json')
 const json = readJSON(pkgfile)
 const AppName = camelCase(json.name, { pascalCase: true })
 
-const env = process.env.NODE_ENV
-const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/react-native')
 const distDir = path.resolve(cwd, AppName)
 
