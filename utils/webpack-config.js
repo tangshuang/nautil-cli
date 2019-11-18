@@ -1,4 +1,5 @@
 const HtmlPlugin = require('html-webpack-plugin')
+const { DefinePlugin } = require('webpack')
 
 /**
  * @param {object} config webpack config
@@ -28,8 +29,20 @@ function replaceOutput(config, replace) {
   return config
 }
 
+function replaceDefineConfig(config, replace) {
+  config.plugins && config.plugins.forEach((plugin, i) => {
+    if (plugin instanceof DefinePlugin) {
+      const { definitions } = plugin
+      const newOptions = replace(definitions)
+      config.plugins[i] = new DefinePlugin(newOptions)
+    }
+  })
+  return config
+}
+
 module.exports = {
   replaceHtmlConfig,
   replaceEntry,
   replaceOutput,
+  replaceDefineConfig,
 }

@@ -2,7 +2,6 @@ const path = require('path')
 const merge = require('webpack-merge')
 const { readJSON } = require('../utils/file')
 const camelCase = require('camelcase')
-const { DefinePlugin } = require('webpack')
 
 const basicConfig = require('./shared/basic-config')
 
@@ -73,11 +72,6 @@ const customConfig = {
       }
       callback()
     },
-  ],
-  plugins: [
-    new DefinePlugin({
-      'process.env.APP_NAME': JSON.stringify(process.env.APP_NAME || AppName),
-    }),
   ],
 }
 

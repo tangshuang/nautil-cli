@@ -3,7 +3,6 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
-const { replaceHtmlConfig } = require('../utils/webpack-config')
 
 const basicConfig = require('./shared/basic-config')
 const splitChunksConfig = require('./shared/split-chunks')

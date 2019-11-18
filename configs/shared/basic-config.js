@@ -4,16 +4,24 @@ const ModuleReplacePlugin = require('../../plugins/module-replace-webpack-plugin
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
+const cwd = process.cwd()
+const env = process.env.NODE_ENV
+const runtime = process.env.RUNTIME_ENV
+const platform = process.env.PLATFORM_ENV
+
 const defineMapping = {}
 const defineKeys = Object.keys(process.env)
 defineKeys.forEach((key) => {
   defineMapping['process.env.' + key] = JSON.stringify(process.env[key])
 })
 
-const cwd = process.cwd()
-const env = process.env.NODE_ENV
-const runtime = process.env.RUNTIME_ENV
-const platform = process.env.PLATFORM_ENV
+// use the project name as default react-native app name
+if (!defineMapping['process.env.APP_NAME']) {
+  const pkgfile = path.resolve(cwd, 'package.json')
+  const json = readJSON(pkgfile)
+  const AppName = camelCase(json.name, { pascalCase: true })
+  defineMapping['process.env.APP_NAME'] = JSON.stringify(AppName)
+}
 
 // basic config
 module.exports = {
