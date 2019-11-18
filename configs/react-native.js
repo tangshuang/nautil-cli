@@ -2,10 +2,11 @@ const path = require('path')
 const merge = require('webpack-merge')
 const { readJSON } = require('../utils/file')
 const camelCase = require('camelcase')
+const { DefinePlugin } = require('webpack')
 
 const basicConfig = require('./shared/basic-config')
 
-const { babelConfig } = require('./rules/jsx')
+const { jsxLoaders } = require('./rules/jsx')
 const { fileLoaders, fileLoaderConfig } = require('./rules/file')
 
 const env = process.env.NODE_ENV
@@ -31,29 +32,8 @@ const customConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.(jsx|js)$/,
-        include: babelConfig.include,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                'module:metro-react-native-babel-preset',
-              ],
-              plugins: [
-                ['transform-class-remove-static-properties', {
-                  mode: env === 'production' ? 'remove' : 'wrap',
-                }],
-                'react-require',
-                ['@babel/plugin-proposal-class-properties', {
-                  loose: true,
-                }],
-              ],
-            },
-          }
-        ],
-      },
+      jsxLoaders,
+      fileLoaders,
       {
         test: /\.css$/,
         use: [
@@ -74,7 +54,6 @@ const customConfig = {
           'sass-loader',
         ],
       },
-      fileLoaders,
     ],
   },
   devServer: {
@@ -94,6 +73,11 @@ const customConfig = {
       }
       callback()
     },
+  ],
+  plugins: [
+    new DefinePlugin({
+      'process.env.APP_NAME': JSON.stringify(process.env.APP_NAME || AppName),
+    }),
   ],
 }
 
