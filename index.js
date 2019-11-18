@@ -34,13 +34,13 @@ commander
       console.error('We will use the dir name as project name: ' + appname)
     }
 
-    const cp = (filename) => {
-      const files = path.resolve(__dirname, 'templates') + '/' + filename
-      shell.exec(`cp -r ${JSON.stringify(files)} ${JSON.stringify(cwd)}`)
-    }
-    cp('.')
-    cp('.env_sample')
-    cp('.gitignore')
+    // copy files into current dir
+    shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates') + '/.')} ${JSON.stringify(cwd)}`)
+    shell.cd(cwd)
+    // rename temp files
+    shell.cp('env', '.env')
+    shell.mv('env', '.env_sample')
+    shell.mv('gitignore', '.gitignore')
 
     const pkgfile = path.resolve(cwd, 'package.json')
     const json = readJSON(pkgfile)
@@ -49,7 +49,6 @@ commander
 
     const verbose = options.verbose ? ' --verbose' : ''
 
-    shell.cd(cwd)
     shell.exec('git init')
     shell.exec('npm i nautil' + verbose)
     shell.exec('npm i -D core-js@3 regenerator-runtime nautil-cli' + verbose)
