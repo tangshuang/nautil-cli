@@ -19,7 +19,9 @@ const includeFiles = [
 const babelConfig = {
   include: includeFiles,
   presets: [
-    ['@babel/preset-env', { modules: false, useBuiltIns: 'usage' }],
+    ['@babel/preset-env', {
+      modules: false,
+    }],
     '@babel/preset-react',
   ],
   plugins: [
@@ -29,6 +31,9 @@ const babelConfig = {
     'react-require',
     ['@babel/plugin-proposal-class-properties', {
       loose: true,
+    }],
+    ['@babel/plugin-transform-runtime', {
+      useESModules: true,
     }],
   ],
 }
