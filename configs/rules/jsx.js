@@ -5,7 +5,7 @@ const cwd = process.cwd()
 
 // files in this list should be es6 module and will be transform by babel
 const includeFiles = [
-  path.resolve(cwd, 'node_modules/ts-fns/src'),
+  path.resolve(cwd, 'node_modules/ts-fns/es'),
   path.resolve(cwd, 'node_modules/storagex/src'),
   path.resolve(cwd, 'node_modules/tyshemo/src'),
   path.resolve(cwd, 'node_modules/rxjs/_esm2015'),
