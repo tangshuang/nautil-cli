@@ -37,7 +37,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'ts-fns': 'ts-fns/src/index.js',
+      'ts-fns': 'ts-fns/es/index.js',
       'storagex': 'storagex/src/storagex.js',
       'tyshemo': 'tyshemo/src/index.js',
       'rxjs': 'rxjs/_esm2015/index.js',

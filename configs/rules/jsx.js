@@ -5,7 +5,7 @@ const cwd = process.cwd()
 
 // files in this list should be es6 module and will be transform by babel
 const includeFiles = [
-  path.resolve(cwd, 'node_modules/ts-fns/src'),
+  path.resolve(cwd, 'node_modules/ts-fns/es'),
   path.resolve(cwd, 'node_modules/storagex/src'),
   path.resolve(cwd, 'node_modules/tyshemo/src'),
   path.resolve(cwd, 'node_modules/rxjs/_esm2015'),
@@ -13,14 +13,15 @@ const includeFiles = [
   path.resolve(cwd, 'node_modules/asw/src'),
   path.resolve(cwd, 'node_modules/nautil'),
   path.resolve(cwd, 'node_modules/react-native'),
-  path.resolve(cwd, 'node_modules/@babel/runtime/helpers/esm'),
   path.resolve(cwd, 'src'),
 ]
 
 const babelConfig = {
   include: includeFiles,
   presets: [
-    ['@babel/preset-env', { modules: false }],
+    ['@babel/preset-env', {
+      modules: false,
+    }],
     '@babel/preset-react',
   ],
   plugins: [
@@ -31,7 +32,9 @@ const babelConfig = {
     ['@babel/plugin-proposal-class-properties', {
       loose: true,
     }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
+    ['@babel/plugin-transform-runtime', {
+      useESModules: true,
+    }],
   ],
 }
 
