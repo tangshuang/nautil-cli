@@ -13,14 +13,13 @@ const includeFiles = [
   path.resolve(cwd, 'node_modules/asw/src'),
   path.resolve(cwd, 'node_modules/nautil'),
   path.resolve(cwd, 'node_modules/react-native'),
-  path.resolve(cwd, 'node_modules/@babel/runtime/helpers/esm'),
   path.resolve(cwd, 'src'),
 ]
 
 const babelConfig = {
   include: includeFiles,
   presets: [
-    ['@babel/preset-env', { modules: false }],
+    ['@babel/preset-env', { modules: false, useBuiltIns: 'usage' }],
     '@babel/preset-react',
   ],
   plugins: [
@@ -31,7 +30,6 @@ const babelConfig = {
     ['@babel/plugin-proposal-class-properties', {
       loose: true,
     }],
-    ['@babel/plugin-transform-runtime', { corejs: 3 }],
   ],
 }
 
