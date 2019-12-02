@@ -32,8 +32,8 @@ const customConfig = {
   entry,
   output: {
     path: distDir,
-    filename: '[name].[hash].js',
-    chunkFilename: '[id].[hash].js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[id].[contenthash].js',
   },
   module: {
     rules: [
@@ -92,8 +92,8 @@ else {
   unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
   plugins.push(
     new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css',
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].[contenthash].css',
     })
   )
 }

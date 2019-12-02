@@ -20,8 +20,8 @@ const plugins = [
     filename: path.resolve(distDir, 'index.html'),
   }),
   new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
-    chunkFilename: '[id].[hash].css',
+    filename: '[name].[contenthash].css',
+    chunkFilename: '[id].[contenthash].css',
   }),
 ]
 
@@ -33,8 +33,8 @@ const customConfig = {
   output: {
     path: path.resolve(distDir, 'public'),
     publicPath: '/',
-    filename: '[name].[hash].js',
-    chunkFilename: '[id].[hash].js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[id].[contenthash].js',
   },
   module: {
     rules: [
