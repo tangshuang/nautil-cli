@@ -45,14 +45,14 @@ module.exports = {
               return `vendors`
             }
           },
-          filename: '[name].[hash].js',
+          filename: '[name].[contenthash].js',
         },
         commons: {
           test(module) {
             return !/node_modules/.test(module.context)
           },
           name: 'main',
-          filename: '[name].[hash].js',
+          filename: '[name].[contenthash].js',
         },
       },
     },

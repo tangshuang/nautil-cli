@@ -22,8 +22,8 @@ const customConfig = {
   ],
   output: {
     path: distDir,
-    filename: '[name].[hash].js',
-    chunkFilename: '[id].[hash].js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[id].[contenthash].js',
   },
   module: {
     rules: [
@@ -36,8 +36,8 @@ const customConfig = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css',
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].[contenthash].css',
     }),
     new WebComponentCssPlugin(),
     new HtmlPlugin({
