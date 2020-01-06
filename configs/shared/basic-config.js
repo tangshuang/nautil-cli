@@ -5,6 +5,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { readJSON } = require('../../utils/file')
 const camelCase = require('camelcase')
+const DeepScopePlugin = require('webpack-deep-scope-plugin')
 
 const cwd = process.cwd()
 const env = process.env.NODE_ENV
@@ -50,7 +51,6 @@ module.exports = {
     extensions: [
       '._' + runtime + '.js',
       '._' + platform + '.js',
-      '._common.js',
       '.cjs',
       '.es',
       '.esm',
@@ -84,5 +84,6 @@ module.exports = {
         ? source.replace('nautil/lib/components', 'nautil/lib/react-native-components')
         : source.replace('nautil/lib/components', 'nautil/lib/dom-components')
     ),
+    new DeepScopePlugin(),
   ],
 }
