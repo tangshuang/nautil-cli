@@ -5,7 +5,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { readJSON } = require('../../utils/file')
 const camelCase = require('camelcase')
-const DeepScopePlugin = require('webpack-deep-scope-plugin')
+const DeepScopePlugin = require('webpack-deep-scope-plugin').default
 
 const cwd = process.cwd()
 const env = process.env.NODE_ENV
