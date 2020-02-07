@@ -1,7 +1,7 @@
-# whether to disable hot reload when run development environment and preview in dom runtime environment
-# NO_HOT_RELOAD=true
+## to disable hot reload when run development environment and preview in dom runtime environment
+NO_HOT_RELOAD=true
 
-# whether to disable css module, default, nautil will use css module
+## to disable css module, default, nautil will use css module
 # NO_CSS_MODULE=true
 
 ## if you want to build a wechat miniprogram (wechat-mp), you should set this
