@@ -15,6 +15,9 @@ const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/web-component')
 const distDir = path.resolve(cwd, 'dist/web-component')
 
+const env = process.env.NODE_ENV
+const HASH = env === 'development' ? 'hash' : 'contenthash'
+
 const customConfig = {
   target: 'web',
   entry: [
@@ -22,8 +25,8 @@ const customConfig = {
   ],
   output: {
     path: distDir,
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[id].[contenthash].js',
+    filename: `[name].[${HASH}].js`,
+    chunkFilename: `[id].[${HASH}].js`,
   },
   module: {
     rules: [
@@ -36,8 +39,8 @@ const customConfig = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css',
+      filename: `[name].[${HASH}].css`,
+      chunkFilename: `[id].[${HASH}].css`,
     }),
     new WebComponentCssPlugin(),
     new HtmlPlugin({

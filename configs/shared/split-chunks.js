@@ -23,6 +23,9 @@ const getPackageDependencies = (name, dependencies = {}) => {
 const nautilDeps = getPackageDependencies('nautil')
 const reactDeps = getPackageDependencies('react')
 
+const env = process.env.NODE_ENV
+const HASH = env === 'development' ? 'hash' : 'contenthash'
+
 module.exports = {
   optimization: {
     splitChunks: {
@@ -45,14 +48,14 @@ module.exports = {
               return `vendors`
             }
           },
-          filename: '[name].[contenthash].js',
+          filename: `[name].[${HASH}].js`,
         },
         commons: {
           test(module) {
             return !/node_modules/.test(module.context)
           },
           name: 'main',
-          filename: '[name].[contenthash].js',
+          filename: `[name].[${HASH}].js`,
         },
       },
     },

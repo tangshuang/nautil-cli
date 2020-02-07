@@ -14,6 +14,9 @@ const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/ssr')
 const distDir = path.resolve(cwd, 'dist/ssr')
 
+const env = process.env.NODE_ENV
+const HASH = env === 'development' ? 'hash' : 'contenthash'
+
 const externals = [
   nodeExternals({
     whitelist: [
@@ -64,8 +67,8 @@ const customConfig = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css',
+      filename: `[name].[${HASH}].css`,
+      chunkFilename: `[id].[${HASH}].css`,
     }),
     new FilesFilterPlugin(function(file) {
       const { options } = this

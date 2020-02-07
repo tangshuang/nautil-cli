@@ -14,14 +14,17 @@ const cwd = process.cwd()
 const srcDir = path.resolve(cwd, 'src/ssr')
 const distDir = path.resolve(cwd, 'dist/ssr')
 
+const env = process.env.NODE_ENV
+const HASH = env === 'development' ? 'hash' : 'contenthash'
+
 const plugins = [
   new HtmlPlugin({
     template: path.resolve(srcDir, 'index.html'),
     filename: path.resolve(distDir, 'index.html'),
   }),
   new MiniCssExtractPlugin({
-    filename: '[name].[contenthash].css',
-    chunkFilename: '[id].[contenthash].css',
+    filename: `[name].[${HASH}].css`,
+    chunkFilename: `[id].[${HASH}].css`,
   }),
 ]
 
@@ -33,8 +36,8 @@ const customConfig = {
   output: {
     path: path.resolve(distDir, 'public'),
     publicPath: '/',
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[id].[contenthash].js',
+    filename: `[name].[${HASH}].js`,
+    chunkFilename: `[id].[${HASH}].js`,
   },
   module: {
     rules: [

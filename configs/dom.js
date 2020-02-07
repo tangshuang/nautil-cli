@@ -27,13 +27,15 @@ const plugins = [
   }),
 ]
 
+const HASH = env === 'development' ? 'hash' : 'contenthash'
+
 const customConfig = {
   target: 'web',
   entry,
   output: {
     path: distDir,
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[id].[contenthash].js',
+    filename: `[name].[${HASH}].js`,
+    chunkFilename: `[id].[${HASH}].js`,
   },
   module: {
     rules: [
@@ -92,8 +94,8 @@ else {
   unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
   plugins.push(
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css',
+      filename: `[name].[${HASH}].css`,
+      chunkFilename: `[id].[${HASH}].css`,
     })
   )
 }
