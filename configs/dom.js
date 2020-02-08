@@ -51,8 +51,9 @@ const customConfig = {
 
 // hot reload
 if (env === 'development' && !process.env.NO_HOT_RELOAD) {
-  babelConfig.plugins.push('react-hot-loader/babel')
-  entry.unshift('react-hot-loader/patch')
+  // TODO: react-hot-loader seems not working in nautil-cli, we are waiting for a more helpful tool
+  // babelConfig.plugins.push('react-hot-loader/babel')
+  // entry.unshift('react-hot-loader/patch')
   unshiftStyesheetLoader(cssLoaders, 'style-loader')
   unshiftStyesheetLoader(lessLoaders, 'style-loader')
   unshiftStyesheetLoader(sassLoaders, 'style-loader')
