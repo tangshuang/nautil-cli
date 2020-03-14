@@ -1,8 +1,10 @@
 const path = require('path')
 const DllPlugin = require('webpack/lib/DllPlugin')
+const merge = require('webpack-merge')
+const TerserJSPlugin = require('terser-webpack-plugin')
 
-const basicConfig = require('./shared/basic-config')
-const { jsxLoaders } = require('./rules/jsx')
+const basicConfig = require('./basic-config')
+const { jsxLoaders } = require('../rules/jsx')
 
 module.exports = function(distDir) {
   const dllConfig = {
@@ -28,6 +30,13 @@ module.exports = function(distDir) {
         path: path.resolve(distDir, '[name].manifest.json'),
       }),
     ],
+    optimization: {
+      minimizer: [
+        new TerserJSPlugin({ extractComments: true }),
+      ],
+      minimize: true,
+    },
+    devtool: 'source-map',
   }
 
   const config = merge(basicConfig, dllConfig)

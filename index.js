@@ -6,6 +6,7 @@ const path = require('path')
 const camelCase = require('camelcase')
 const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
 const dotenv = require('dotenv')
+const fs = require('fs')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -50,7 +51,7 @@ commander
     const verbose = options.verbose ? ' --verbose' : ''
 
     shell.exec('git init')
-    shell.exec('npm i nautil' + verbose)
+    shell.exec('npm i nautil ' + verbose)
     shell.exec('npm i -D nautil-cli' + verbose)
 
     // generate react-native files
@@ -249,15 +250,9 @@ commander
       clean = env === 'production' ? true : false,
     } = options
 
+    // build DLL first at all
     const envs = dotenv.parse(fs.readFileSync(path.resolve(cwd, '.env')))
-    const buildDll = () => {
-      if (!envs.DLL) {
-        return
-      }
-      if (!exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
-        return
-      }
-
+    if (envs.DLL && exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
       shell.echo(`Building DLL...`)
       shell.exec(`nautil-cli build ${target}-dll --env=${env} --runtime=dom --platform=web --clean=${clean}`)
     }
@@ -290,7 +285,6 @@ commander
       }
 
       if (exists(clientConfigFile)) {
-        buildDll()
         shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
       }
 
@@ -314,9 +308,11 @@ commander
 
     const config = require(configFile)
 
+
     let distPath = config.output.path
 
     if (runtime === 'react-native' && !exists(distPath)) {
+
       const dirname = path.basename(distPath)
       console.error('ReactNative not generated. Run `nautil-cli init-react-native ' + dirname + '` first.')
       if (!/^[a-zA-Z]+$/.test(dirname)) {
@@ -337,12 +333,12 @@ commander
       shell.rm('-rf', distPath)
     }
 
-
     if (!config.devServer) {
       console.error(`config.devServer is not existing in your config options.`)
       shell.exit(1)
       return
     }
+
 
     const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(configFile)} webpack-dev-server --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))}`
     if (runtime === 'react-native') {
@@ -362,7 +358,6 @@ commander
     }
     else {
       shell.cd(cwd)
-      buildDll()
       shell.exec(cmd)
     }
   })
