@@ -5,6 +5,7 @@ const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
 const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
+const dotenv = require('dotenv')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
@@ -54,7 +55,7 @@ commander
 
     // generate react-native files
     if (options.reactnative) {
-      shell.exec('npx nautil-cli init-react-native ' + appname)
+      shell.exec('nautil-cli init-react-native ' + appname)
     }
 
     shell.exit(0)
@@ -87,7 +88,7 @@ commander
     const verbose = options.verbose ? ' --verbose' : ''
 
     shell.cd(cwd)
-    shell.exec(`npx react-native init ${AppName}`)
+    shell.exec(`react-native init ${AppName}`)
 
     // install @react-native-community packages
     shell.cd(path.resolve(cwd, AppName))
@@ -110,16 +111,68 @@ commander
 commander
   .command('build <target>')
   .option('-e, --env [env]', 'production|development')
-  .option('-r, --runtime [runtime]', 'runtime environment of application, dom|react-native|web-component|wechat-miniprogram|ssr|ssr-client')
-  .option('-p, --platform [platform]', 'dom|ios|andriod')
+  .option('-r, --runtime [runtime]', 'runtime environment of application, dom|react-native|web-component|wechat-miniprogram|ssr-server|ssr-client')
+  .option('-p, --platform [platform]', 'web|service|ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
   .action(function(target, options) {
     const {
       env = 'production',
-      runtime = target,
-      platform = runtime === 'react-native' ? 'ios' : 'dom',
+      runtime = target === 'dom-dll' ? 'dom' : target,
+      platform = runtime === 'react-native' ? 'ios' : 'web',
       clean = env === 'production' ? true : false,
     } = options
+
+    const envs = dotenv.parse(fs.readFileSync(path.resolve(cwd, '.env')))
+    const buildDll = () => {
+      if (!envs.DLL) {
+        return
+      }
+      if (!exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
+        return
+      }
+
+      shell.echo(`Building DLL...`)
+      shell.exec(`nautil-cli build ${target}-dll --env=${env} --runtime=dom --platform=web --clean=${clean}`)
+    }
+
+    // ssr is splited into 2 parts, server side and client side, so we will do it automatic inside
+    if (runtime === 'ssr') {
+      const serverConfigFile = path.resolve(cwd, `.nautil/${target}-server.js`)
+      const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
+
+      // clear the dist files
+      if (clean && runtime !== 'react-native') {
+        if (exists(clientConfigFile)) {
+          const config = require(clientConfigFile)
+          const distPath = config.output.path
+          shell.rm('-rf', distPath)
+        }
+        if (exists(serverConfigFile)) {
+          const config = require(serverConfigFile)
+          const distPath = config.output.path
+          shell.rm('-rf', distPath)
+        }
+      }
+
+      shell.cd(cwd)
+
+      // server side building should come first
+      if (exists(serverConfigFile)) {
+        shell.echo(`Building SSR: ${target}-server ...`)
+        shell.exec(`nautil-cli build ${target}-server --env=${env} --runtime=ssr-server --platform=service --clean=${clean}`)
+      }
+
+      // client build should be after server side build,
+      // or the dist dir will be remove
+      if (exists(clientConfigFile)) {
+        buildDll()
+        shell.echo(`Building SSR: ${target}-client ...`)
+        shell.exec(`nautil-cli build ${target}-client --env=${env} --runtime=ssr-client --platform=web --clean=${clean}`)
+      }
+
+      // stop going down
+      return
+    }
 
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
     if (!exists(configFile)) {
@@ -129,11 +182,12 @@ commander
     }
 
     const config = require(configFile)
+
     let distPath = config.output.path
 
     if (runtime === 'react-native' && !exists(distPath)) {
       const dirname = path.basename(distPath)
-      console.error('ReactNative not generated. Run `npx nautil-cli init-react-native ' + dirname + '` first.')
+      console.error('ReactNative not generated. Run `nautil-cli init-react-native ' + dirname + '` first.')
       if (!/^[a-zA-Z]+$/.test(dirname)) {
         console.error('Notice: the output.path option in ' + configFile + ' dirname should be camel case.')
       }
@@ -145,13 +199,14 @@ commander
     if (runtime === 'wechat-miniprogram') {
       distPath = path.resolve(distPath, '..')
     }
-    // todo: alipay-mp
+    // TODO alipay-mp
 
     if (clean && runtime !== 'react-native') {
       shell.rm('-rf', distPath)
     }
 
     shell.cd(cwd)
+    buildDll()
     shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(configFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))}`)
 
     if (!exists(distPath)) {
@@ -168,39 +223,87 @@ commander
       shell.cp('-r', 'node_modules/miniprogram-element/src', 'miniprogram_npm/miniprogram-element')
       shell.cp('-r', 'node_modules/miniprogram-render/src', 'miniprogram_npm/miniprogram-render')
     }
-    else if (runtime === 'react-native') {
+
+    if (runtime === 'react-native') {
       const AppName = path.basename(distPath)
       const assetsDir = JSON.stringify(path.resolve(cwd, `dist/${AppName}/assets`))
       const bundlePath = JSON.stringify(path.resolve(cwd, `dist/${AppName}/${platform}.bundle`))
       shell.mkdir('-p', assetsDir)
 
       shell.cd(distPath)
-      shell.exec(`npx react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
-    }
-    else if (runtime === 'ssr') {
-      // client build should be after server side build,
-      // or the dist dir will be remove
-      const clientConfigFile = path.resolve(cwd, '.nautil/ssr-client.js')
-      if (exists(clientConfigFile)) {
-        shell.echo('Building ssr-client ...')
-        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))}`)
-      }
+      shell.exec(`react-native bundle --entry-file=index.js --platform=${platform} --dev=false --minify=true --bundle-output=${bundlePath} --assets-dest=${assetsDir}`)
     }
   })
 
 commander
   .command('dev <target>')
   .option('-e, --env [env]', 'production|development')
-  .option('-r, --runtime [runtime]', 'runtime environment of application dom|react-native|web-component|wechat-miniprogram|ssr|ssr-client')
-  .option('-p, --platform [platform]', 'ios|andriod')
+  .option('-r, --runtime [runtime]', 'runtime environment of application dom|react-native|web-component|wechat-miniprogram|ssr-server|ssr-client')
+  .option('-p, --platform [platform]', 'web|service|ios|andriod')
   .option('-c, --clean [clean]', 'remove the output dir before build')
   .action(function(target, options) {
     const {
       env = 'development',
-      runtime = target,
-      platform = runtime === 'react-native' ? 'ios' : 'dom',
+      runtime = target === 'dom-dll' ? 'dom' : target,
+      platform = runtime === 'react-native' ? 'ios' : 'web',
       clean = env === 'production' ? true : false,
     } = options
+
+    const envs = dotenv.parse(fs.readFileSync(path.resolve(cwd, '.env')))
+    const buildDll = () => {
+      if (!envs.DLL) {
+        return
+      }
+      if (!exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
+        return
+      }
+
+      shell.echo(`Building DLL...`)
+      shell.exec(`nautil-cli build ${target}-dll --env=${env} --runtime=dom --platform=web --clean=${clean}`)
+    }
+
+    // there is no devServer in ssr config,
+    // so it should return before devServer checking
+    if (runtime === 'ssr') {
+      const serverConfigFile = path.resolve(cwd, `.nautil/${target}-server.js`)
+      const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
+
+      // clear the dist files
+      if (clean && runtime !== 'react-native') {
+        if (exists(clientConfigFile)) {
+          const config = require(clientConfigFile)
+          const distPath = config.output.path
+          shell.rm('-rf', distPath)
+        }
+        if (exists(serverConfigFile)) {
+          const config = require(serverConfigFile)
+          const distPath = config.output.path
+          shell.rm('-rf', distPath)
+        }
+      }
+
+      shell.cd(cwd)
+
+      if (exists(serverConfigFile)) {
+        shell.echo('Build ssr files before setup for server...')
+        shell.exec(`nautil-cli build ${target}-server --env=${env} --runtime=ssr-server`)
+      }
+
+      if (exists(clientConfigFile)) {
+        buildDll()
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
+      }
+
+      if (exists(serverConfigFile)) {
+        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(configFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
+        // server up
+        shell.cd(output.path)
+        shell.exec('nodemon ' + output.filename)
+      }
+
+      // stop going down
+      return
+    }
 
     const configFile = path.resolve(cwd, '.nautil', target + '.js')
     if (!exists(configFile)) {
@@ -210,11 +313,12 @@ commander
     }
 
     const config = require(configFile)
+
     let distPath = config.output.path
 
     if (runtime === 'react-native' && !exists(distPath)) {
       const dirname = path.basename(distPath)
-      console.error('ReactNative not generated. Run `npx nautil-cli init-react-native ' + dirname + '` first.')
+      console.error('ReactNative not generated. Run `nautil-cli init-react-native ' + dirname + '` first.')
       if (!/^[a-zA-Z]+$/.test(dirname)) {
         console.error('Notice: the output.path option in ' + configFile + ' dirname should be camel case.')
       }
@@ -233,27 +337,6 @@ commander
       shell.rm('-rf', distPath)
     }
 
-    // there is no devServer in ssr config,
-    // so it should return before devServer checking
-    if (runtime === 'ssr') {
-      const output = config.output
-
-      shell.cd(cwd)
-
-      shell.echo('Build ssr files before setup for server...')
-      shell.exec(`npx nautil-cli build ${target} --env=${env} --runtime=ssr`)
-
-      const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
-      if (exists(clientConfigFile)) {
-        shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
-      }
-      shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(configFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
-
-      // server up
-      shell.cd(output.path)
-      shell.exec('nodemon ' + output.filename)
-      return
-    }
 
     if (!config.devServer) {
       console.error(`config.devServer is not existing in your config options.`)
@@ -269,16 +352,17 @@ commander
       shell.cd(cwd)
       shell.exec(cmd, { async: true })
       shell.cd(distPath)
-      shell.exec(`npx react-native run-${platform}`)
+      shell.exec(`react-native run-${platform}`)
     }
     else if (runtime === 'wechat-miniprogram') {
       shell.cd(cwd)
       // files/dirs should exist before serve up
-      shell.exec(`npx nautil-cli build ${target} --env=${env} --runtime=wechat-miniprogram`)
+      shell.exec(`nautil-cli build ${target} --env=${env} --runtime=wechat-miniprogram`)
       shell.exec(cmd)
     }
     else {
       shell.cd(cwd)
+      buildDll()
       shell.exec(cmd)
     }
   })

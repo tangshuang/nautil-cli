@@ -1,8 +1,12 @@
 ## to disable hot reload when run development environment and preview in dom runtime environment
-NO_HOT_RELOAD=true
+HOT_RELOAD=true
 
 ## to disable css module, default, nautil will use css module
-# NO_CSS_MODULE=true
+CSS_MODULE=true
 
 ## if you want to build a wechat miniprogram (wechat-mp), you should set this
-# WECHAT_MINIPROGRAM_APP_ID=xxx
+WECHAT_MINIPROGRAM_APP_ID=xxx
+
+## whether to use DLL to speed your building
+## when you use DLL, you should run `nautil-cli build dom-dll` first
+DLL=true

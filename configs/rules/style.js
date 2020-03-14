@@ -1,7 +1,7 @@
 const path = require('path')
 const cwd = process.cwd()
 const env = process.env.NODE_ENV
-const noCssModule = process.env.NO_CSS_MODULE
+const isCssModule = process.env.CSS_MODULE
 
 const cssLoaderModuleConfig = {
   modules: {
@@ -20,7 +20,7 @@ const postcssLoaderConfig = {
 }
 
 const createStylesheetLoaders = (options = {}) => {
-  const { modules = !noCssModule, less, sass } = options
+  const { modules = isCssModule, less, sass } = options
   const loaders = [
     {
       loader: 'postcss-loader',

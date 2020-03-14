@@ -38,23 +38,25 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'ts-fns': 'ts-fns/es/index.js',
-      'storagex': 'storagex/src/storagex.js',
-      'tyshemo': 'tyshemo/src/index.js',
-      'rxjs': 'rxjs/_esm2015/index.js',
-      'etx': 'etx/src/etx.js',
-      'asw': 'asw/src/index.js',
+      'ts-fns': path.resolve(cwd, 'node_modules/ts-fns/es/index.js'),
+      storagex: path.resolve(cwd, 'node_modules/storagex/src/storagex.js'),
+      tyshemo: path.resolve(cwd, 'node_modules/tyshemo/src/index.js'),
+      rxjs: path.resolve(cwd, 'node_modules/rxjs/_esm2015/index.js'),
+      etx: path.resolve(cwd, 'node_modules/etx/src/etx.js'),
+      asw: path.resolve(cwd, 'node_modules/asw/src/index.js'),
     },
     modules: [
       path.resolve(cwd, 'node_modules'),
     ],
     extensions: [
-      '._' + runtime + '.js',
-      '._' + platform + '.js',
-      '.cjs',
-      '.es',
-      '.esm',
+      '._' + runtime + '_.js',
+      '._' + platform + '_.js',
       '.js',
+    ],
+  },
+  module: {
+    noParse: [
+      /node_modules\/react/,
     ],
   },
   optimization: {
@@ -69,7 +71,7 @@ module.exports = {
     sideEffects: true,
   },
   // only in web and hot-reload open, we will use '#eval-source-map'
-  devtool: env === 'production' ? undefined : (runtime === 'dom' && !process.env.NO_HOT_RELOAD ? '#eval-source-map' : 'source-map'),
+  devtool: env === 'production' ? undefined : (runtime === 'dom' && process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map'),
   devServer: {
     compress: true,
     port: 9000,
