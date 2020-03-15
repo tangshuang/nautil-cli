@@ -108,7 +108,7 @@ module.exports = function(overrideConfig = {}) {
       new DllReferencePlugin({
         manifest: require(path.resolve(distDir, 'react.manifest.json')),
       }),
-      new DllReferenctPlugin({
+      new DllReferencePlugin({
         manifest: require(path.resolve(distDir, 'nautil.manifest.json')),
       }),
     ],
