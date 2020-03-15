@@ -5,6 +5,7 @@ const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
 const ModuleModifyPlugin = require('../plugins/module-modify-webpack-plugin')
 const DllReferencePlugin = require('webpack/lib/DllReferencePlugin')
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const basicConfig = require('./shared/basic-config')
 const splitChunksConfig = require('./shared/split-chunks')
@@ -103,18 +104,25 @@ module.exports = function(overrideConfig = {}) {
     )
   }
 
-  const dllConfig = {
-    plugins: [
-      new DllReferencePlugin({
-        manifest: require(path.resolve(distDir, 'react.manifest.json')),
-      }),
-      new DllReferencePlugin({
-        manifest: require(path.resolve(distDir, 'nautil.manifest.json')),
-      }),
-    ],
+  let splitConfig = splitChunksConfig
+  // DllReferencePlugin will read the manifest file at the moment,
+  // so we shoul not new the plugin in processing
+  if (process.env.DLL) {
+    splitConfig = {
+      plugins: [
+        new DllReferencePlugin({
+          manifest: require(path.resolve(distDir, 'react.manifest.json')),
+        }),
+        new DllReferencePlugin({
+          manifest: require(path.resolve(distDir, 'nautil.manifest.json')),
+        }),
+        new AddAssetHtmlPlugin({
+          filepath: path.resolve(distDir, '*.dll.js'),
+        }),
+      ],
+    }
   }
 
-  const splitConfig = process.env.DLL ? dllConfig : splitChunksConfig
   const config = merge(basicConfig, splitConfig, customConfig)
   const outputConfig = merge(config, overrideConfig)
 
