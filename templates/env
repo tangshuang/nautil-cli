@@ -1,5 +1,9 @@
 ## to disable hot reload when run development environment and preview in dom runtime environment
+## should only works when env=development
 HOT_RELOAD=true
+## livereload, it should not be set with HOT_RELOAD at the same time
+## if both set, HOT_RELOAD comes with higher priority
+# LIVE_RELOAD=true
 
 ## to disable css module, default, nautil will use css module
 CSS_MODULE=true
@@ -8,5 +12,5 @@ CSS_MODULE=true
 WECHAT_MINIPROGRAM_APP_ID=xxx
 
 ## whether to use DLL to speed your building
-## when you use DLL, you should run `nautil-cli build dom-dll` first
+## nautil-cli will auto build DLL before each building
 DLL=true

@@ -54,11 +54,6 @@ module.exports = {
       '.js',
     ],
   },
-  module: {
-    noParse: [
-      /node_modules\/react/,
-    ],
-  },
   optimization: {
     minimizer: env === 'production' ? [
       new TerserJSPlugin({ extractComments: true }),
@@ -73,6 +68,9 @@ module.exports = {
   // only in web and hot-reload open, we will use '#eval-source-map'
   devtool: env === 'production' ? undefined : (runtime === 'dom' && process.env.HOT_RELOAD ? '#eval-source-map' : 'source-map'),
   devServer: {
+    inline: process.env.HOT_RELOAD || process.env.LIVE_RELOAD,
+    hot: process.env.HOT_RELOAD,
+    liveReload: !process.env.HOT_RELOAD && process.env.LIVE_RELOAD,
     compress: true,
     port: 9000,
     historyApiFallback: true,

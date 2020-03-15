@@ -6,11 +6,12 @@ const path = require('path')
 const camelCase = require('camelcase')
 const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
 const dotenv = require('dotenv')
-const fs = require('fs')
 
 const pkg = require('./package.json')
 const { version, name } = pkg
 const cwd = process.cwd()
+
+dotenv.config()
 
 commander
   .name(name)
@@ -123,9 +124,8 @@ commander
       clean = env === 'production' ? true : false,
     } = options
 
-    const envs = dotenv.parse(fs.readFileSync(path.resolve(cwd, '.env')))
     const buildDll = () => {
-      if (!envs.DLL) {
+      if (!process.env.DLL) {
         return
       }
       if (!exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
@@ -140,20 +140,6 @@ commander
     if (runtime === 'ssr') {
       const serverConfigFile = path.resolve(cwd, `.nautil/${target}-server.js`)
       const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
-
-      // clear the dist files
-      if (clean && runtime !== 'react-native') {
-        if (exists(clientConfigFile)) {
-          const config = require(clientConfigFile)
-          const distPath = config.output.path
-          shell.rm('-rf', distPath)
-        }
-        if (exists(serverConfigFile)) {
-          const config = require(serverConfigFile)
-          const distPath = config.output.path
-          shell.rm('-rf', distPath)
-        }
-      }
 
       shell.cd(cwd)
 
@@ -250,9 +236,14 @@ commander
       clean = env === 'production' ? true : false,
     } = options
 
-    // build DLL first at all
-    const envs = dotenv.parse(fs.readFileSync(path.resolve(cwd, '.env')))
-    if (envs.DLL && exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
+    const buildDll = () => {
+      if (!process.env.DLL) {
+        return
+      }
+      if (!exists(path.resolve(cwd, `.nautil/${target}-dll.js`))) {
+        return
+      }
+
       shell.echo(`Building DLL...`)
       shell.exec(`nautil-cli build ${target}-dll --env=${env} --runtime=dom --platform=web --clean=${clean}`)
     }
@@ -263,20 +254,6 @@ commander
       const serverConfigFile = path.resolve(cwd, `.nautil/${target}-server.js`)
       const clientConfigFile = path.resolve(cwd, `.nautil/${target}-client.js`)
 
-      // clear the dist files
-      if (clean && runtime !== 'react-native') {
-        if (exists(clientConfigFile)) {
-          const config = require(clientConfigFile)
-          const distPath = config.output.path
-          shell.rm('-rf', distPath)
-        }
-        if (exists(serverConfigFile)) {
-          const config = require(serverConfigFile)
-          const distPath = config.output.path
-          shell.rm('-rf', distPath)
-        }
-      }
-
       shell.cd(cwd)
 
       if (exists(serverConfigFile)) {
@@ -285,6 +262,7 @@ commander
       }
 
       if (exists(clientConfigFile)) {
+        buildDll()
         shell.exec(`cross-env NODE_ENV=${env} RUNTIME_ENV=ssr-client PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(clientConfigFile)} webpack --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))} --watch`, { async: true })
       }
 
@@ -308,11 +286,9 @@ commander
 
     const config = require(configFile)
 
-
     let distPath = config.output.path
 
     if (runtime === 'react-native' && !exists(distPath)) {
-
       const dirname = path.basename(distPath)
       console.error('ReactNative not generated. Run `nautil-cli init-react-native ' + dirname + '` first.')
       if (!/^[a-zA-Z]+$/.test(dirname)) {
@@ -339,7 +315,6 @@ commander
       return
     }
 
-
     const cmd = `cross-env NODE_ENV=${env} RUNTIME_ENV=${runtime} PLATFORM_ENV=${platform} WEBPACK_TARGET_FILE=${JSON.stringify(configFile)} webpack-dev-server --config=${JSON.stringify(path.resolve(__dirname, 'webpack.config.js'))}`
     if (runtime === 'react-native') {
       shell.echo('===============================\n\n')
@@ -358,6 +333,7 @@ commander
     }
     else {
       shell.cd(cwd)
+      buildDll()
       shell.exec(cmd)
     }
   })

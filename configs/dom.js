@@ -4,11 +4,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const { HotModuleReplacementPlugin } = require('webpack')
 const ModuleModifyPlugin = require('../plugins/module-modify-webpack-plugin')
-const DllReferencePlugin = require('webpack/lib/DllReferencePlugin')
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const basicConfig = require('./shared/basic-config')
 const splitChunksConfig = require('./shared/split-chunks')
+const dllref = require('./shared/dll-refer')
 
 const { jsxLoaders } = require('./rules/jsx')
 const { cssLoaders, lessLoaders, sassLoaders, unshiftStyesheetLoader } = require('./rules/style')
@@ -50,6 +49,9 @@ module.exports = function(overrideConfig = {}) {
       ],
     },
     plugins,
+    devServer: {
+      contentBase: distDir,
+    },
   }
 
   // hot reload
@@ -62,6 +64,8 @@ module.exports = function(overrideConfig = {}) {
     unshiftStyesheetLoader(sassLoaders, 'style-loader')
 
     customConfig.devServer = {
+      ...customConfig.devServer,
+      inline: true,
       hot: true,
       liveReload: false,
     }
@@ -104,26 +108,8 @@ module.exports = function(overrideConfig = {}) {
     )
   }
 
-  let splitConfig = splitChunksConfig
-  // DllReferencePlugin will read the manifest file at the moment,
-  // so we shoul not new the plugin in processing
-  if (process.env.DLL) {
-    splitConfig = {
-      plugins: [
-        new DllReferencePlugin({
-          manifest: require(path.resolve(distDir, 'react.manifest.json')),
-        }),
-        new DllReferencePlugin({
-          manifest: require(path.resolve(distDir, 'nautil.manifest.json')),
-        }),
-        new AddAssetHtmlPlugin({
-          filepath: path.resolve(distDir, '*.dll.js'),
-        }),
-      ],
-    }
-  }
-
-  const config = merge(basicConfig, splitConfig, customConfig)
+  const splitConfig = process.env.DLL ? dllref(distDir) : splitChunksConfig
+  const config = merge(basicConfig, customConfig, splitConfig)
   const outputConfig = merge(config, overrideConfig)
 
   return outputConfig

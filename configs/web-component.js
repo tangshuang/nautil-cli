@@ -3,11 +3,10 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const WebComponentCssPlugin = require('../plugins/web-component-css-webpack-plugin')
-const DllReferencePlugin = require('webpack/lib/DllReferencePlugin')
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const basicConfig = require('./shared/basic-config')
 const splitChunksConfig = require('./shared/split-chunks')
+const dllref = require('./shared/dll-refer')
 
 const { fileLoaders, fileLoaderConfig } = require('./rules/file')
 const { jsxLoaders } = require('./rules/jsx')
@@ -51,6 +50,9 @@ module.exports = function(overrideConfig = {}) {
         filename: path.resolve(distDir, 'index.html'),
       }),
     ],
+    devServer: {
+      contentBase: distDir,
+    },
   }
 
   // all files should be convert to be base64
@@ -60,26 +62,8 @@ module.exports = function(overrideConfig = {}) {
   unshiftStyesheetLoader(lessLoaders, MiniCssExtractPlugin.loader)
   unshiftStyesheetLoader(sassLoaders, MiniCssExtractPlugin.loader)
 
-  let splitConfig = splitChunksConfig
-  // DllReferencePlugin will read the manifest file at the moment,
-  // so we shoul not new the plugin in processing
-  if (process.env.DLL) {
-    splitConfig = {
-      plugins: [
-        new DllReferencePlugin({
-          manifest: require(path.resolve(distDir, 'react.manifest.json')),
-        }),
-        new DllReferencePlugin({
-          manifest: require(path.resolve(distDir, 'nautil.manifest.json')),
-        }),
-        new AddAssetHtmlPlugin({
-          filepath: path.resolve(distDir, '*.dll.js'),
-        }),
-      ],
-    }
-  }
-
-  const config = merge(basicConfig, splitConfig, customConfig)
+  const splitConfig = process.env.DLL ? dllref(distDir) : splitChunksConfig
+  const config = merge(basicConfig, customConfig, splitConfig)
   const outputConfig = merge(config, overrideConfig)
 
   return outputConfig

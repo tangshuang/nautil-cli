@@ -36,7 +36,7 @@ module.exports = function(distDir) {
       ],
       minimize: true,
     },
-    devtool: 'source-map',
+    devtool: process.env.NODE_ENV === 'production' ? undefined : 'source-map',
   }
 
   const config = merge(basicConfig, dllConfig)
