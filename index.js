@@ -49,7 +49,10 @@ commander
     }
     else {
       // copy .nautil dir
-      shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates/.nautil'))} ${JSON.stringify(path.resolve(cwd, '.nautil'))}`)
+      if (!exists(path.resolve(cwd, '.nautil'))) {
+        shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates/.nautil'))} ${JSON.stringify(path.resolve(cwd, '.nautil'))}`)
+      }
+
       shell.cd(cwd)
       // .env
       const envFile = path.join(cwd, '.env')
@@ -63,19 +66,24 @@ commander
       }
     }
 
+    const pkgfile = path.resolve(cwd, 'package.json')
+    const json = readJSON(pkgfile)
+    // use appname
     if (!hasFiles || (hasFiles && !hasPkgFile)) {
-      const pkgfile = path.resolve(cwd, 'package.json')
-      const json = readJSON(pkgfile)
       json.name = appname
-      writeJSON(pkgfile, json)
     }
+    // append scripts
+    const scripts = require(path.join(__dirname, 'templates/package.json')).scripts
+    json.scripts = json.scripts || {}
+    Object.assign(json.scripts, scripts)
+    writeJSON(pkgfile, json)
 
     if (!hasFiles) {
       shell.exec('git init')
     }
 
     const verbose = options.verbose ? ' --verbose' : ''
-    shell.exec('npm i nautil ' + verbose)
+    shell.exec('npm i nautil' + verbose)
     shell.exec('npm i -D nautil-cli' + verbose)
 
     // generate react-native files
