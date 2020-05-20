@@ -15,7 +15,8 @@ module.exports = function(overrideConfig = {}) {
   // use the project name as default react-native app name
   const pkgfile = path.resolve(cwd, 'package.json')
   const json = readJSON(pkgfile)
-  const AppName = camelCase(json.name, { pascalCase: true })
+  const appname = json.name.split('/').pop()
+  const AppName = camelCase(appname, { pascalCase: true })
 
   const srcDir = path.resolve(cwd, 'src/react-native')
   const distDir = path.resolve(cwd, AppName)

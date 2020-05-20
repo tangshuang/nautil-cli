@@ -104,7 +104,7 @@ commander
     if (!name) {
       const pkgfile = path.resolve(cwd, 'package.json')
       const json = readJSON(pkgfile)
-      name = json.name
+      name = json.name.split('/').pop()
 
       if (!name) {
         console.error('There is no `name` field in package.json')

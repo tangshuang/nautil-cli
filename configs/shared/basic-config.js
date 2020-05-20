@@ -21,12 +21,12 @@ defineKeys.forEach((key) => {
 // use the project name as default react-native app name
 const pkgfile = path.resolve(cwd, 'package.json')
 const json = readJSON(pkgfile)
+const appname = json.name.split('/').pop()
 if (!defineMapping['process.env.app_name']) {
-  const appname = json.name.toLowerCase()
   defineMapping['process.env.app_name'] = JSON.stringify(appname)
 }
 if (!defineMapping['process.env.APP_NAME']) {
-  const AppName = camelCase(json.name, { pascalCase: true })
+  const AppName = camelCase(appname, { pascalCase: true })
   defineMapping['process.env.APP_NAME'] = JSON.stringify(AppName)
 }
 
