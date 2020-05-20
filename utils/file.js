@@ -36,6 +36,12 @@ function write(file, content) {
 	fs.writeFileSync(file, content)
 }
 
+function append(file, content) {
+	const source = read(file)
+	const next = source + content
+	write(file, next)
+}
+
 function writeJSON(file, json) {
 	write(file, JSON.stringify(json, null, 2))
 }
@@ -121,5 +127,6 @@ module.exports = {
   rename,
   copy,
   getFileExt,
-  setFileExt,
+	setFileExt,
+	append,
 }

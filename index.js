@@ -4,7 +4,7 @@ const commander = require('commander')
 const shell = require('shelljs')
 const path = require('path')
 const camelCase = require('camelcase')
-const { exists, readJSON, writeJSON, scandir } = require('./utils/file')
+const { exists, readJSON, writeJSON, scandir, read, append, write } = require('./utils/file')
 const dotenv = require('dotenv')
 
 const pkg = require('./package.json')
@@ -24,34 +24,57 @@ commander
   .option('--verbose [verbose]', 'show debug logs')
   .action(function(name, options) {
     const currentfiles = scandir(cwd)
-    if (currentfiles && currentfiles.length) {
-      console.error('Current dir is not empty.')
-      shell.exit(1)
-      return
-    }
+    const hasFiles = currentfiles && currentfiles.length
+    const hasPkgFile = exists(path.join(cwd, 'package.json'))
 
     let appname = name
-    if (!appname) {
+    if ((!hasFiles && !appname) || (hasFiles && !hasPkgFile && !appname)) {
       appname = path.basename(cwd)
       console.error('We will use the dir name as project name: ' + appname)
     }
 
-    // copy files into current dir
-    shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates') + '/.')} ${JSON.stringify(cwd)}`)
-    shell.cd(cwd)
-    // rename temp files
-    shell.cp('env', '.env')
-    shell.mv('env', '.env_sample')
-    shell.mv('gitignore', '.gitignore')
+    if (hasFiles && !hasPkgFile) {
+      // cp package.json
+      shell.exec(`cp ${JSON.stringify(path.resolve(__dirname, 'templates/package.json'))} ${JSON.stringify(path.resolve(cwd, 'package.json'))}`)
+    }
 
-    const pkgfile = path.resolve(cwd, 'package.json')
-    const json = readJSON(pkgfile)
-    json.name = appname
-    writeJSON(pkgfile, json)
+    if (!hasFiles) {
+      // copy files into current dir
+      shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates') + '/.')} ${JSON.stringify(cwd)}`)
+      shell.cd(cwd)
+      // rename temp files
+      shell.cp('env', '.env')
+      shell.mv('env', '.env_sample')
+      shell.mv('gitignore', '.gitignore')
+    }
+    else {
+      // copy .nautil dir
+      shell.exec(`cp -r ${JSON.stringify(path.resolve(__dirname, 'templates/.nautil'))} ${JSON.stringify(path.resolve(cwd, '.nautil'))}`)
+      shell.cd(cwd)
+      // .env
+      const envFile = path.join(cwd, '.env')
+      const envSource = path.join(__dirname, 'templates/env')
+      const envContent = read(envSource)
+      if (exists(envFile)) {
+        append(envFile, '\n\n' + envContent)
+      }
+      else {
+        write(envFile, envContent)
+      }
+    }
+
+    if (!hasFiles || (hasFiles && !hasPkgFile)) {
+      const pkgfile = path.resolve(cwd, 'package.json')
+      const json = readJSON(pkgfile)
+      json.name = appname
+      writeJSON(pkgfile, json)
+    }
+
+    if (!hasFiles) {
+      shell.exec('git init')
+    }
 
     const verbose = options.verbose ? ' --verbose' : ''
-
-    shell.exec('git init')
     shell.exec('npm i nautil ' + verbose)
     shell.exec('npm i -D nautil-cli' + verbose)
 
