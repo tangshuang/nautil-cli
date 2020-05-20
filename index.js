@@ -59,7 +59,10 @@ commander
       const envSource = path.join(__dirname, 'templates/env')
       const envContent = read(envSource)
       if (exists(envFile)) {
-        append(envFile, '\n\n' + envContent)
+        const content = read(envFile)
+        if (content.indexOf('NAUTIL-CLI') === -1) {
+          append(envFile, '\n\n' + envContent)
+        }
       }
       else {
         write(envFile, envContent)

@@ -1,3 +1,6 @@
+############################
+##  NAUTIL-CLI
+############################
 ## to disable hot reload when run development environment and preview in dom runtime environment
 ## should only works when env=development
 HOT_RELOAD=true
