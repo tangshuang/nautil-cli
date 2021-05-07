@@ -2,10 +2,10 @@
   "init": {
     "private": true,
     "dependencies": {
-      "nautil": "^0.30.7"
+      "nautil": "^0.31.1"
     },
     "devDependencies": {
-      "nautil-cli": "^0.10.0-0"
+      "nautil-cli": "^0.10.0"
     }
   },
   "lazy": [
