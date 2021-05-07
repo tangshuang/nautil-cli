@@ -18,7 +18,7 @@ export class HomeController extends Controller {
     const { shop_name, shop_description } = this.home
     return (
       <Section {...props}>
-        <Text>Shop: {shop_name} {shop_description}</Text>
+        <Text>Shop: {shop_name} ({shop_description})</Text>
       </Section>
     )
   }

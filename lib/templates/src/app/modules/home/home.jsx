@@ -5,7 +5,7 @@ import { Component, Section } from 'nautil'
 import { HomeController } from './home.controller'
 
 // import css modules, nautil-cli will help you to export locals as a mapping
-import HomeCss from './home.css'
+import * as HomeCss from './home.css'
 
 export class Home extends Component {
   // import css modules to static css, so that you can use this.css to get css rules as scoped css

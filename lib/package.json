@@ -17,31 +17,31 @@
       },
       "devDependencies": {
         "html-webpack-plugin": "^5.3.1",
-        "mini-css-extract-plugin": "^0.8.2",
-        "optimize-css-assets-webpack-plugin": "^5.0.3",
-        "react-hot-loader": "^4.12.20",
-        "style-loader": "^0.23.1"
+        "mini-css-extract-plugin": "^1.6.0",
+        "optimize-css-assets-webpack-plugin": "^5.0.4",
+        "react-hot-loader": "^4.13.0",
+        "style-loader": "^2.0.0"
       }
     },
     {
       "platforms": ["dom"],
       "scripts": {
         "dev:dom": "nautil dev dom",
-        "build:dom": "nautil build dom"
+        "build:dom": "NODE_ENV=production nautil build dom"
       }
     },
     {
       "platforms": ["web-component"],
       "scripts": {
         "dev:webc": "nautil dev web-component",
-        "build:webc": "nautil build web-component"
+        "build:webc": "NODE_ENV=production nautil build web-component"
       }
     },
     {
       "platforms": ["ssr"],
       "scripts": {
         "dev:ssr": "nautil dev ssr",
-        "build:ssr": "nautil build ssr"
+        "build:ssr": "NODE_ENV=production nautil build ssr"
       },
       "devDependencies": {
         "nodemon": "^1.19.4"
@@ -51,7 +51,7 @@
       "platforms": ["native"],
       "scripts": {
         "dev:native": "nautil dev native",
-        "build:native": "nautil build native"
+        "build:native": "NODE_ENV=production nautil build native"
       },
       "dependencies": {
         "@react-native-async-storage/async-storage": "^1.14.1",
