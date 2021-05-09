@@ -2,10 +2,10 @@
   "init": {
     "private": true,
     "dependencies": {
+      "core-js": "^3.12.1",
       "nautil": "^0.31.1"
     },
     "devDependencies": {
-      "nautil-cli": "^0.10.0"
     }
   },
   "lazy": [
@@ -27,21 +27,21 @@
       "platforms": ["dom"],
       "scripts": {
         "dev:dom": "nautil dev dom",
-        "build:dom": "NODE_ENV=production nautil build dom"
+        "build:dom": "nautil build dom"
       }
     },
     {
       "platforms": ["web-component"],
       "scripts": {
         "dev:webc": "nautil dev web-component",
-        "build:webc": "NODE_ENV=production nautil build web-component"
+        "build:webc": "nautil build web-component"
       }
     },
     {
       "platforms": ["ssr"],
       "scripts": {
         "dev:ssr": "nautil dev ssr",
-        "build:ssr": "NODE_ENV=production nautil build ssr"
+        "build:ssr": "nautil build ssr"
       },
       "devDependencies": {
         "nodemon": "^1.19.4"
@@ -51,7 +51,7 @@
       "platforms": ["native"],
       "scripts": {
         "dev:native": "nautil dev native",
-        "build:native": "NODE_ENV=production nautil build native"
+        "build:native": "nautil build native"
       },
       "dependencies": {
         "@react-native-async-storage/async-storage": "^1.14.1",

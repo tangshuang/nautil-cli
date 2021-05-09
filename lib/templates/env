@@ -2,5 +2,11 @@
 ##  NAUTIL-CLI
 ############################
 
+## env target
+## - development
+## - production
+## you can use it to relate to .nautil/cli-config.json `env` options
+NODE_ENV=development
+
 ## if you want to build a wechat miniprogram (wechat-mp), you should set this
 WECHAT_MINIPROGRAM_APP_ID=xxx
