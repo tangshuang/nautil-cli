@@ -15,10 +15,11 @@ export class HomeController extends Controller {
 
   Shop(props) {
     // use information of HomeModel
-    const { shop_name, shop_description } = this.home
+    const { shop_name, shop_description } = this.home.shop
     return (
       <Section {...props}>
-        <Text>Shop: {shop_name} ({shop_description})</Text>
+        <Text>Shop Name: {shop_name}</Text>
+        <Text>Shop Description: {shop_description}</Text>
       </Section>
     )
   }
