@@ -15,3 +15,8 @@
   width: 100%;
   flex: 1;
 }
+
+/* override Text style */
+.home-shop span {
+  display: block;
+}
