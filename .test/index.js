@@ -1,2 +1,2 @@
-import { Component, Text } from 'nautil'
+import { Component, Store, Text } from 'nautil'
 import { mount } from 'nautil/dom'
