@@ -1,5 +1,6 @@
-import { createApp, Navigation } from 'nautil'
-import { Home } from './modules/home/home'
+import { createApp, Navigation, createAsyncComponent } from 'nautil'
+
+const Home = createAsyncComponent(() => import('./modules/home/home'))
 
 const navigation = new Navigation({
   // mode will be ignored in native
