@@ -3,7 +3,7 @@
     "private": true,
     "dependencies": {
       "core-js": "^3.12.1",
-      "nautil": "^0.31.13",
+      "nautil": "^0.31.20",
       "regenerator-runtime": "^0.13.7"
     },
     "devDependencies": {
