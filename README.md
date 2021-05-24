@@ -41,12 +41,16 @@ A CLI tool for [Nautil](https://github.com/tangshuang/nautil) app.
   },
 
   source: {
-    "my-dir": { // you can run `nautil build my-dir` to bundle scripts in `src/my-dir`
+    // you can run `nautil build my-dir` to bundle scripts in `src/my-dir`
+    "my-dir": {
       "platform": "dom",
       "extensions": [
         ".mobile.tsx",
         ".mobile.jsx"
-      ]
+      ],
+
+      // export my-dir as a library with export name `my-lib`
+      "libaray": "my-lib"
     }
   },
 }
