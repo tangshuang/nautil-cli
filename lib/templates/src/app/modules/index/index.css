@@ -1,0 +1,23 @@
+.index-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.index-logo {
+  width: 300px;
+  height: 300px;
+  animation: rotating infinite 20s linear;
+}
+.index-title {
+  font-size: 2em;
+  position: relative;
+  z-index: 9;
+}
+
+@keyframes rotating {
+  0% { transform: rotateZ(0deg); }
+  100% { transform: rotateZ(-360deg); }
+}
