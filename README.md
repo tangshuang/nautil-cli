@@ -32,6 +32,8 @@ A CLI tool for [Nautil](https://github.com/tangshuang/nautil) app.
     "/api": "http://localhost:3000"
   },
 
+  cache: false, // when true, nautil-cli will use cache feature
+
   env: {
     "development": { // to override configs
       clear: false,
