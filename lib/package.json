@@ -3,7 +3,7 @@
     "private": true,
     "dependencies": {
       "core-js": "^3.12.1",
-      "nautil": "^0.31.20",
+      "nautil": "^0.32.1",
       "regenerator-runtime": "^0.13.7"
     },
     "devDependencies": {
@@ -65,6 +65,23 @@
       "devDependencies": {
         "react-native-cli": "^2.0.1",
         "react-native-css-loader": "^1.0.2"
+      }
+    },
+    {
+      "platform": ["wechat"],
+      "scripts": {
+        "dev:wechat": "nautil dev wechat",
+        "build:wechat": "nautil build wechat"
+      },
+      "dependencies": {
+        "react-reconciler": "^0.26.2",
+        "scheduler": "^0.20.2"
+      },
+      "devDependencies": {
+        "file-loader": "^6.2.0",
+        "mini-css-extract-plugin": "^1.6.0",
+        "optimize-css-assets-webpack-plugin": "^5.0.4",
+        "url-loader": "^4.1.1"
       }
     }
   ]
