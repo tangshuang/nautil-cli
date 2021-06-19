@@ -1,17 +1,24 @@
-import { createApp, Navigation } from 'nautil'
-import { Home } from './modules/home/home'
+import { createApp, Navigation, createAsyncComponent } from 'nautil'
+
+const Index = createAsyncComponent(() => import('./modules/index/index'))
+const Home = createAsyncComponent(() => import('./modules/home/home'))
 
 const navigation = new Navigation({
   // mode will be ignored in native
   mode: 'history',
   routes: [
     {
+      name: 'index',
+      path: '/',
+      component: Index,
+    },
+    {
       name: 'home',
       path: '/home',
       component: Home,
     },
   ],
-  defaultRoute: 'home',
+  defaultRoute: 'index',
   notFound: () => 'Not Found',
 })
 

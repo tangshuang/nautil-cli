@@ -3,7 +3,8 @@
     "private": true,
     "dependencies": {
       "core-js": "^3.12.1",
-      "nautil": "^0.31.1"
+      "nautil": "^0.31.20",
+      "regenerator-runtime": "^0.13.7"
     },
     "devDependencies": {
     }
@@ -16,11 +17,13 @@
         "react-dom": "^17.0.2"
       },
       "devDependencies": {
+        "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.3.1",
         "mini-css-extract-plugin": "^1.6.0",
         "optimize-css-assets-webpack-plugin": "^5.0.4",
         "react-hot-loader": "^4.13.0",
-        "style-loader": "^2.0.0"
+        "style-loader": "^2.0.0",
+        "url-loader": "^4.1.1"
       }
     },
     {
