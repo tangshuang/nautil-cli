@@ -8,7 +8,7 @@ export default class Index extends Component {
   render() {
     return (
       <Section stylesheet={this.css.indexContainer}>
-        <Section stylesheet={this.css.indexLogo}><Image source={LogoSrc} /></Section>
+        <Section stylesheet={[this.css.indexLogo, 'index__logo']}><Image source={LogoSrc} /></Section>
         <Section stylesheet={this.css.indexTitle}><Text>Nautil</Text></Section>
       </Section>
     )
