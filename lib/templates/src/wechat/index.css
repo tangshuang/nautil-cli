@@ -1,4 +1,5 @@
-.index__logo {
+.index__logo,
+.index__logo-img {
   width: 100px;
   height: 100px;
 }
