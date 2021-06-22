@@ -63,7 +63,9 @@
         "react-native-locale-detector": "^1.0.1"
       },
       "devDependencies": {
-        "react-native-css-loader": "^1.0.2"
+        "css": "^3.0.0",
+        "file-loader": "^6.2.0",
+        "url-loader": "^4.1.1"
       }
     },
     {
