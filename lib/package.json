@@ -59,11 +59,10 @@
       "dependencies": {
         "@react-native-async-storage/async-storage": "^1.14.1",
         "i18next-react-native-language-detector": "^1.0.2",
-        "react-native": "^0.64.0",
+        "react-native": "^0.64.2",
         "react-native-locale-detector": "^1.0.1"
       },
       "devDependencies": {
-        "react-native-cli": "^2.0.1",
         "react-native-css-loader": "^1.0.2"
       }
     },
