@@ -1,6 +1,6 @@
 {
   "name": "nautil-cli",
-  "version": "0.13.18",
+  "version": "0.13.19-0",
   "description": "Nautil [https://nautil.js.org] CLI",
   "main": "index.js",
   "bin": {
