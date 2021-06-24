@@ -87,6 +87,10 @@
     },
     {
       "platforms": ["electron"],
+      "scripts": {
+        "dev:eltr": "nautil dev electron",
+        "build:eltr": "nautil build electron"
+      },
       "devDependencies": {
         "electron": "^9.1.1",
         "electron-builder": "^22.7.0"
