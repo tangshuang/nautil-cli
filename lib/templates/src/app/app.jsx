@@ -4,8 +4,7 @@ const Index = createAsyncComponent(() => import('./modules/index/index'))
 const Home = createAsyncComponent(() => import('./modules/home/home'))
 
 const navigation = new Navigation({
-  // mode will be ignored in native
-  mode: 'history',
+  mode: '/',
   routes: [
     {
       name: 'index',
